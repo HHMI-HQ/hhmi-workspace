@@ -25,10 +25,11 @@ export function CoveredPublicationSection({
   ItemComponent: React.ComponentType<{
     item: NormalizedArticleRecord;
     orcid: string;
+    scientist: NormalizedScientist;
     viewContext: ViewContext;
   }>;
   orcid: string;
-  scientist?: NormalizedScientist;
+  scientist: NormalizedScientist | undefined;
   viewContext: ViewContext;
 }) {
   const [resolvedPublications, setResolvedPublications] = useState<NormalizedArticleRecord[]>([]);
@@ -75,14 +76,18 @@ export function CoveredPublicationSection({
     globalIndex: number,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     localIndex?: number,
-  ) => (
-    <ItemComponent
-      key={publication.id || `pub-${globalIndex}`}
-      item={publication}
-      orcid={orcid}
-      viewContext={viewContext}
-    />
-  );
+  ) => {
+    if (!scientist) return null;
+    return (
+      <ItemComponent
+        key={publication.id || `pub-${globalIndex}`}
+        item={publication}
+        orcid={orcid}
+        scientist={scientist}
+        viewContext={viewContext}
+      />
+    );
+  };
 
   const renderContributionGroup = (
     groupKey: string,
@@ -106,11 +111,11 @@ export function CoveredPublicationSection({
         }
         headerContent={(key, count) => (
           <div className="px-6 pt-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
+            <div className="flex gap-4 justify-between items-center">
+              <div className="flex gap-3 items-center">
                 {isMajorContributor ? (
                   <>
-                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-stone-100">
+                    <div className="flex justify-center items-center w-10 h-10 rounded-full bg-stone-100">
                       <ListTodo className="w-5 h-5 text-stone-600" />
                     </div>
                     <div>
@@ -124,7 +129,7 @@ export function CoveredPublicationSection({
                   </>
                 ) : (
                   <>
-                    <div className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full">
+                    <div className="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-full">
                       <Files className="w-5 h-5 text-gray-600" />
                     </div>
                     <div>

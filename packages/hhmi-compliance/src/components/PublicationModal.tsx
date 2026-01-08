@@ -1,5 +1,5 @@
 import { X, ExternalLink, Check } from 'lucide-react';
-import type { NormalizedArticleRecord } from '../backend/types.js';
+import type { NormalizedArticleRecord, NormalizedScientist } from '../backend/types.js';
 import { buildUrl } from 'doi-utils';
 import { cn, formatDate, usePingEvent, ui } from '@curvenote/scms-core';
 import { HHMITrackEvent } from '../analytics/events.js';
@@ -61,7 +61,7 @@ function PolicyLink({ policy }: { policy?: string }) {
       onClick={handlePolicyClick}
     >
       {policyName}
-      <ExternalLink className="inline-block w-4 h-4 ml-1" />
+      <ExternalLink className="inline-block ml-1 w-4 h-4" />
     </a>
   );
 }
@@ -71,7 +71,7 @@ interface PublicationModalProps {
   isOpen: boolean;
   onClose: () => void;
   showComplianceStatusBar?: boolean;
-  orcid: string;
+  scientist: NormalizedScientist;
   viewContext: ViewContext;
 }
 
@@ -84,7 +84,13 @@ function Item({ label, value }: { label: string; value: string | React.ReactNode
   );
 }
 
-export function ComplianceStatusBar({ item }: { item: NormalizedArticleRecord }) {
+export function ComplianceStatusBar({
+  item,
+  scientist,
+}: {
+  item: NormalizedArticleRecord;
+  scientist: NormalizedScientist | undefined;
+}) {
   return (
     <div
       className={cn('flex gap-2 p-2 rounded-sm border flex flex-col gap-2', {
@@ -94,9 +100,9 @@ export function ComplianceStatusBar({ item }: { item: NormalizedArticleRecord })
     >
       {item.compliant && !item.everNonCompliant && (
         <>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center flex-shrink-0 gap-2">
-              <div className="flex items-center justify-center w-5 h-5 rounded-full bg-success shrink-0">
+          <div className="flex flex-wrap gap-2 items-center">
+            <div className="flex flex-shrink-0 gap-2 items-center">
+              <div className="flex justify-center items-center w-5 h-5 rounded-full bg-success shrink-0">
                 <Check className="w-3 h-3 text-white" />
               </div>
               <div className="font-bold whitespace-nowrap text-medium">Compliant</div>
@@ -119,9 +125,9 @@ export function ComplianceStatusBar({ item }: { item: NormalizedArticleRecord })
       )}
       {!item.compliant && (
         <>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center flex-shrink-0 gap-2">
-              <div className="flex items-center justify-center w-5 h-5 rounded-full bg-warning shrink-0">
+          <div className="flex flex-wrap gap-2 items-center">
+            <div className="flex flex-shrink-0 gap-2 items-center">
+              <div className="flex justify-center items-center w-5 h-5 rounded-full bg-warning shrink-0">
                 <X className="w-3 h-3 text-white" />
               </div>
               <div className="font-bold whitespace-nowrap text-medium">
@@ -149,6 +155,23 @@ export function ComplianceStatusBar({ item }: { item: NormalizedArticleRecord })
               <span className="font-medium">you are not required to take action</span>.
             </div>
           )}
+          {item.isLinkedToPrimaryOrcid &&
+            scientist?.nextReviewWithin2Years &&
+            item.journal?.reviewReminder && (
+              <div className="text-sm font-light">
+                <span className="font-semibold">Review Reminder:</span>{' '}
+                {item.journal.reviewReminder}
+              </div>
+            )}
+          {item.isLinkedToPrimaryOrcid &&
+            scientist?.nextReviewWithin2Years &&
+            item.preprint?.reviewReminder &&
+            !item.journal?.reviewReminder && (
+              <div className="text-sm font-light">
+                <span className="font-semibold">Review Reminder:</span>{' '}
+                {item.preprint.reviewReminder}
+              </div>
+            )}
           <>
             {item.preprint?.actionSteps && (
               <div className="text-sm font-light">
@@ -165,9 +188,9 @@ export function ComplianceStatusBar({ item }: { item: NormalizedArticleRecord })
       )}
       {item.compliant && item.everNonCompliant && (
         <>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center flex-shrink-0 gap-2">
-              <div className="flex items-center justify-center w-5 h-5 rounded-full bg-success shrink-0">
+          <div className="flex flex-wrap gap-2 items-center">
+            <div className="flex flex-shrink-0 gap-2 items-center">
+              <div className="flex justify-center items-center w-5 h-5 rounded-full bg-success shrink-0">
                 <Check className="w-3 h-3 text-white" />
               </div>
               <div className="font-bold whitespace-nowrap text-medium">
@@ -200,7 +223,7 @@ export function PublicationModal({
   isOpen,
   onClose,
   showComplianceStatusBar = true,
-  orcid,
+  scientist,
   viewContext,
 }: PublicationModalProps) {
   const pingEvent = usePingEvent();
@@ -217,7 +240,7 @@ export function PublicationModal({
         doi: pub.preprint?.doi,
         doiType: 'preprint',
         linkUrl: buildUrl(pub.preprint?.doi ?? ''),
-        orcid,
+        orcid: scientist.orcid,
         viewContext,
         viewLocation: 'modal',
       },
@@ -234,7 +257,7 @@ export function PublicationModal({
         doi: pub.journal?.doi,
         doiType: 'journal',
         linkUrl: buildUrl(pub.journal?.doi ?? ''),
-        orcid,
+        orcid: scientist.orcid,
         viewContext,
         viewLocation: 'modal',
       },
@@ -250,7 +273,7 @@ export function PublicationModal({
         publicationTitle: pub.title,
         urlType: 'journal',
         linkUrl: pub.journal?.url,
-        orcid,
+        orcid: scientist.orcid,
         viewContext,
         viewLocation: 'modal',
       },
@@ -266,7 +289,7 @@ export function PublicationModal({
         publicationTitle: pub.title,
         urlType: 'preprint',
         linkUrl: pub.preprint?.url,
-        orcid,
+        orcid: scientist.orcid,
         viewContext,
         viewLocation: 'modal',
       },
@@ -318,7 +341,7 @@ export function PublicationModal({
     <ui.Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
       <ui.DialogContent variant="wide">
         <ui.DialogHeader>
-          <ui.DialogTitle className="flex items-center justify-between">
+          <ui.DialogTitle className="flex justify-between items-center">
             <span className="pr-8">Publication Details</span>
           </ui.DialogTitle>
         </ui.DialogHeader>
@@ -338,13 +361,13 @@ export function PublicationModal({
           </div>
           <PublicationLinks
             publication={pub}
-            orcid={orcid}
+            orcid={scientist.orcid}
             viewContext={viewContext}
             viewLocation="modal"
           />
 
           {/* Compliance Status Bar */}
-          {showComplianceStatusBar && <ComplianceStatusBar item={pub} />}
+          {showComplianceStatusBar && <ComplianceStatusBar item={pub} scientist={scientist} />}
 
           {/* Detailed Information List */}
           <div className="space-y-4">
@@ -372,7 +395,7 @@ export function PublicationModal({
                               linkType: 'PubMed',
                               pmid: pub.pmid,
                               linkUrl: `https://pubmed.ncbi.nlm.nih.gov/${pub.pmid}/`,
-                              orcid,
+                              orcid: scientist.orcid,
                               viewContext,
                               viewLocation: 'modal',
                             },
@@ -405,7 +428,7 @@ export function PublicationModal({
                               linkType: 'PMC',
                               pmcid: pub.pmcid,
                               linkUrl: `https://www.ncbi.nlm.nih.gov/pmc/articles/${pub.pmcid}/`,
-                              orcid,
+                              orcid: scientist.orcid,
                               viewContext,
                               viewLocation: 'modal',
                             },
@@ -539,7 +562,7 @@ export function PublicationModal({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-end justify-end gap-3 pt-4 border-gray-200 dark:border-gray-700">
+          <div className="flex gap-3 justify-end items-end pt-4 border-gray-200 dark:border-gray-700">
             <ui.Button onClick={handleCloseButtonClick} variant="outline">
               Close
             </ui.Button>
@@ -564,7 +587,7 @@ export function PublicationModal({
       </ui.DialogContent>
       <RequestHelpDialog
         publication={pub as HelpRequestPublication}
-        orcid={orcid}
+        orcid={scientist.orcid}
         open={showHelpDialog}
         onOpenChange={handleHelpDialogClose}
         title="Request Help from the Open Science Team"

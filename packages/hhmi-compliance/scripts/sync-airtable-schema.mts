@@ -9,7 +9,7 @@
  *   AIRTABLE_API_KEY=your_key npx tsx app/modules/extensions/hhmi-compliance/scripts/sync-airtable-schema.mts
  *
  * Or with inline args:
- *   npx tsx app/modules/extensions/hhmi-compliance/scripts/sync-airtable-schema.mts <api-key> <base-id>
+ *   npx tsx scripts/sync-airtable-schema.mts <api-key> <base-id>
  */
 
 import * as fs from 'fs';
@@ -23,7 +23,7 @@ const __dirname = path.dirname(__filename);
 // Configuration
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY || process.argv[2];
 const BASE_ID = process.env.AIRTABLE_BASE_ID || process.argv[3] || 'appuBoDw7bAfzfyK4';
-const CONFIG_PATH = path.join(__dirname, '..', 'backend', 'airtableConfig.ts');
+const CONFIG_PATH = path.join(__dirname, '..', 'src', 'backend', 'airtableConfig.ts');
 
 // Airtable Metadata API Types
 interface AirtableFieldMetadata {

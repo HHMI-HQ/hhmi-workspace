@@ -17,6 +17,7 @@ export interface NormalizedArticleRecord {
   linkedScientistsOrcids?: string[];
   isLinkedToPrimaryOrcid?: boolean;
   topLevelPolicy?: string;
+  activateReviewReminder?: string;
 
   // Preprint-specific data
   preprint?: {
@@ -30,6 +31,7 @@ export interface NormalizedArticleRecord {
     complianceIssueType?: string;
     complianceIssueStatus?: string;
     authors?: string[];
+    reviewReminder?: string;
     actionSteps?: string;
   };
 
@@ -45,6 +47,7 @@ export interface NormalizedArticleRecord {
     complianceIssueType?: string;
     complianceIssueStatus?: string;
     authors?: string[];
+    reviewReminder?: string;
     actionSteps?: string;
   };
 }
@@ -65,6 +68,7 @@ export interface NormalizedScientist {
   institution: string;
   complianceRateCoveredPreprints: number;
   complianceRateCoveredPublications: number;
+  nextReviewWithin2Years: boolean;
   preprints: {
     total: number;
     totalSubjectToPolicy: number;

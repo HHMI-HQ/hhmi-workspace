@@ -1,4 +1,4 @@
-import type { NormalizedArticleRecord } from '../backend/types.js';
+import type { NormalizedArticleRecord, NormalizedScientist } from '../backend/types.js';
 
 import { ComplianceBadge, type ViewContext } from './Badges.js';
 import { useState } from 'react';
@@ -13,11 +13,11 @@ import { formatLicenseForDisplay } from '../utils/licenseFormatting.js';
 
 export function CoveredArticleItem({
   item,
-  orcid,
+  scientist,
   viewContext,
 }: {
   item: NormalizedArticleRecord;
-  orcid: string;
+  scientist: NormalizedScientist;
   viewContext: ViewContext;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -113,7 +113,7 @@ export function CoveredArticleItem({
                           publicationTitle: item.title,
                           urlType: 'preprint',
                           linkUrl: item.preprint?.url ?? '',
-                          orcid,
+                          orcid: scientist.orcid,
                           viewContext,
                           viewLocation: 'list',
                         },
@@ -168,7 +168,7 @@ export function CoveredArticleItem({
                           publicationTitle: item.title,
                           urlType: 'journal',
                           linkUrl: item.journal?.url ?? '',
-                          orcid,
+                          orcid: scientist.orcid,
                           viewContext,
                           viewLocation: 'list',
                         },
@@ -207,7 +207,7 @@ export function CoveredArticleItem({
             item={item}
             size="xs"
             className="p-1 pl-2"
-            orcid={orcid}
+            orcid={scientist.orcid}
             viewContext={viewContext}
             viewLocation="list"
           />
@@ -217,7 +217,7 @@ export function CoveredArticleItem({
         item={item}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        orcid={orcid}
+        scientist={scientist}
         viewContext={viewContext}
       />
     </div>

@@ -70,6 +70,7 @@ export function normalizePreprintRecordToArticleRecord(
       complianceIssueType: cleanString(fields[PREPRINT_FIELDS.issue_type.id]),
       complianceIssueStatus: cleanString(fields[PREPRINT_FIELDS.status.id]),
       authors: preprintAuthors,
+      reviewReminder: cleanString(fields[PREPRINT_FIELDS.review_reminder.id]),
       actionSteps: cleanString(fields[PREPRINT_FIELDS.action_steps.id]),
     },
     journal: linkedPublication

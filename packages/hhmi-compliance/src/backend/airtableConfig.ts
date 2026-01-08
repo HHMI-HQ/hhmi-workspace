@@ -460,6 +460,10 @@ export const AIRTABLE_CONFIG = {
           name: 'Responded',
           id: 'fldmzGKHADZuQNazb',
         },
+        review_reminder: {
+          name: 'Review Reminder',
+          id: 'fldxBZPrqt2fzo5qZ',
+        },
         scientist_disciplines: {
           name: 'Scientist Disciplines',
           id: 'fldTTQ5loNKYeRNid',
@@ -499,6 +503,10 @@ export const AIRTABLE_CONFIG = {
         subject: {
           name: 'subject',
           id: 'fld9z1B9p4amhGpir',
+        },
+        temp: {
+          name: 'Temp',
+          id: 'fldQNX7kdd0GwRv7r',
         },
         title: {
           name: 'title',
@@ -830,6 +838,18 @@ export const AIRTABLE_CONFIG = {
           name: 'Publication: PMC URL',
           id: 'fldviJbp3h8JpZuWA',
         },
+        publication_pmcid: {
+          name: 'Publication: PMCID',
+          id: 'fldbZLDApI2WsL413',
+        },
+        publication_pmid: {
+          name: 'Publication: PMID',
+          id: 'fldZeoTmTJtM80hNG',
+        },
+        publication_publisher: {
+          name: 'Publication: Publisher',
+          id: 'fldJXJ3a71b39tvrV',
+        },
         publication_status: {
           name: 'Publication: Status',
           id: 'fldHZ1oQcq3yIyI9c',
@@ -865,6 +885,10 @@ export const AIRTABLE_CONFIG = {
         responded: {
           name: 'Responded',
           id: 'fld7WZIn8PhZdeOVV',
+        },
+        review_reminder: {
+          name: 'Review Reminder',
+          id: 'fldTRnKZRX5EiWxW3',
         },
         scientist_email_s: {
           name: 'Scientist Email(s)',
@@ -1115,6 +1139,10 @@ export const AIRTABLE_CONFIG = {
         most_recent_competition: {
           name: 'Most Recent Competition',
           id: 'fldBOZkNHyhRpw5O6',
+        },
+        next_review_within_2_years: {
+          name: 'Next Review Within 2 Years',
+          id: 'fldbqtOfcSX6XdlpE',
         },
         nihms_grant_id: {
           name: 'NIHMS Grant ID',

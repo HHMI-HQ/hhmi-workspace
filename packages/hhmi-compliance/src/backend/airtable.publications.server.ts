@@ -52,6 +52,7 @@ export function normalizePublicationRecordsToArticleRecord(
       license: cleanLicenseString(fields[PUBLICATION_FIELDS.publisher_license_best.id]),
       complianceIssueType: cleanString(fields[PUBLICATION_FIELDS.issue_type.id]),
       complianceIssueStatus: cleanString(fields[PUBLICATION_FIELDS.status.id]),
+      reviewReminder: cleanString(fields[PUBLICATION_FIELDS.review_reminder.id]),
       actionSteps: cleanString(fields[PUBLICATION_FIELDS.action_steps.id]),
     } satisfies NormalizedArticleRecord['journal'],
   } satisfies NormalizedArticleRecord;

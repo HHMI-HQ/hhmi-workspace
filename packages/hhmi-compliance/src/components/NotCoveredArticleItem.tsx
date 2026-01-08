@@ -1,4 +1,4 @@
-import type { NormalizedArticleRecord } from '../backend/types.js';
+import type { NormalizedArticleRecord, NormalizedScientist } from '../backend/types.js';
 
 import { useState } from 'react';
 import { PublicationModal } from './PublicationModal.js';
@@ -13,11 +13,11 @@ import type { ViewContext } from './Badges.js';
 
 export function NotCoveredArticleItem({
   item,
-  orcid,
+  scientist,
   viewContext,
 }: {
   item: NormalizedArticleRecord;
-  orcid: string;
+  scientist: NormalizedScientist;
   viewContext: ViewContext;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -76,7 +76,7 @@ export function NotCoveredArticleItem({
           <div className="text-xs">{summarizeAuthorList(item.authors)}</div>
           <div className="text-xs">{formatDate(item.date ?? '')}</div>
         </div>
-        <div className="flex flex-col max-w-2xl gap-0 divide-y divide-gray-200">
+        <div className="flex flex-col gap-0 max-w-2xl divide-y divide-gray-200">
           <div className="grid grid-cols-12 gap-4 p-1 text-xs font-light text-center even:bg-gray-50 odd:bg-white">
             <div className="col-span-12 md:col-span-3"></div>
             <div className="col-span-12 md:col-span-3">License</div>
@@ -87,13 +87,13 @@ export function NotCoveredArticleItem({
           {item.preprint?.doi && (
             <div className="grid grid-cols-12 gap-4 px-1 text-xs">
               {/* Column 1: Preprint label */}
-              <div className="flex items-center col-span-12 pl-1 text-xs text-center md:col-span-3">
+              <div className="flex col-span-12 items-center pl-1 text-xs text-center md:col-span-3">
                 <ui.Button variant="link" size="sm" asChild>
                   <a
                     href={item.preprint.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-center"
+                    className="inline-flex gap-1 items-center text-center"
                     onClick={() =>
                       pingEvent(
                         HHMITrackEvent.HHMI_COMPLIANCE_URL_LINK_CLICKED,
@@ -102,7 +102,7 @@ export function NotCoveredArticleItem({
                           publicationTitle: item.title,
                           urlType: 'preprint',
                           linkUrl: item.preprint?.url ?? '',
-                          orcid,
+                          orcid: scientist.orcid,
                           viewContext,
                           viewLocation: 'list',
                         },
@@ -116,21 +116,21 @@ export function NotCoveredArticleItem({
               </div>
 
               {/* Column 2: Compliance */}
-              <div className="flex items-center justify-center col-span-4 md:col-span-3">
+              <div className="flex col-span-4 justify-center items-center md:col-span-3">
                 <div className="flex gap-[2px] items-center text-xs">
                   {formatLicenseForDisplay(item.preprint.license) ?? '—'}
                 </div>
               </div>
 
               {/* Column 3: Compliance Issue */}
-              <div className="flex items-center col-span-4 text-center md:col-span-3">
+              <div className="flex col-span-4 items-center text-center md:col-span-3">
                 <div className="w-full text-center text-muted-foreground">
                   {item.preprint.complianceIssueType ?? '—'}
                 </div>
               </div>
 
               {/* Column 4: Compliance Status */}
-              <div className="flex items-center col-span-4 text-center md:col-span-3">
+              <div className="flex col-span-4 items-center text-center md:col-span-3">
                 <IssueStatusWithTooltip
                   issueStatus={item.preprint.complianceIssueStatus}
                   issueType={item.preprint.complianceIssueType}
@@ -142,13 +142,13 @@ export function NotCoveredArticleItem({
           {item.journal?.doi && (
             <div className="grid grid-cols-12 gap-4 px-1 text-xs">
               {/* Column 1: Journal article label */}
-              <div className="flex items-center col-span-12 pl-1 text-xs text-center md:col-span-3">
+              <div className="flex col-span-12 items-center pl-1 text-xs text-center md:col-span-3">
                 <ui.Button variant="link" size="sm" asChild>
                   <a
                     href={item.journal.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-center"
+                    className="inline-flex gap-1 items-center text-center"
                     onClick={() =>
                       pingEvent(
                         HHMITrackEvent.HHMI_COMPLIANCE_URL_LINK_CLICKED,
@@ -157,7 +157,7 @@ export function NotCoveredArticleItem({
                           publicationTitle: item.title,
                           urlType: 'journal',
                           linkUrl: item.journal?.url ?? '',
-                          orcid,
+                          orcid: scientist.orcid,
                           viewContext,
                           viewLocation: 'list',
                         },
@@ -170,21 +170,21 @@ export function NotCoveredArticleItem({
                 </ui.Button>
               </div>
               {/* Column 2: Compliance */}
-              <div className="flex items-center justify-center col-span-4 text-center md:col-span-3">
+              <div className="flex col-span-4 justify-center items-center text-center md:col-span-3">
                 <div className="flex gap-[2px] items-center text-xs">
                   {formatLicenseForDisplay(item.journal.license) ?? '—'}
                 </div>
               </div>
 
               {/* Column 3: Compliance Issue */}
-              <div className="flex items-center col-span-4 text-center md:col-span-3">
+              <div className="flex col-span-4 items-center text-center md:col-span-3">
                 <div className="w-full text-center text-muted-foreground">
                   {item.journal.complianceIssueType ?? '—'}
                 </div>
               </div>
 
               {/* Column 4: Compliance Status */}
-              <div className="flex items-center col-span-4 text-center md:col-span-3">
+              <div className="flex col-span-4 items-center text-center md:col-span-3">
                 <IssueStatusWithTooltip
                   issueStatus={item.journal.complianceIssueStatus}
                   issueType={item.journal.complianceIssueType}
@@ -196,7 +196,7 @@ export function NotCoveredArticleItem({
             item={item}
             size="xs"
             className="p-1 pl-2"
-            orcid={orcid}
+            orcid={scientist.orcid}
             viewContext={viewContext}
             viewLocation="list"
           />
@@ -207,7 +207,7 @@ export function NotCoveredArticleItem({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         showComplianceStatusBar={false}
-        orcid={orcid}
+        scientist={scientist}
         viewContext={viewContext}
       />
     </div>

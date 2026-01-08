@@ -18,6 +18,7 @@ export function NonCoveredPublicationsSection({
   ItemComponent: React.ComponentType<{
     item: NormalizedArticleRecord;
     orcid: string;
+    scientist: NormalizedScientist;
     viewContext: ViewContext;
   }>;
   orcid: string;
@@ -54,14 +55,18 @@ export function NonCoveredPublicationsSection({
     globalIndex: number,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     localIndex?: number,
-  ) => (
-    <ItemComponent
-      key={publication.id || `pub-${globalIndex}`}
-      item={publication}
-      orcid={orcid}
-      viewContext={viewContext}
-    />
-  );
+  ) => {
+    if (!scientist) return null;
+    return (
+      <ItemComponent
+        key={publication.id || `pub-${globalIndex}`}
+        item={publication}
+        orcid={orcid}
+        scientist={scientist}
+        viewContext={viewContext}
+      />
+    );
+  };
 
   const renderYearGroup = (
     year: string,

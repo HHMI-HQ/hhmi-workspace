@@ -102,7 +102,7 @@ export function ComplianceReport({
   return (
     <div className="space-y-8">
       {error && (
-        <div className="p-4 mb-6 border border-red-200 rounded-lg bg-red-50 dark:bg-red-900/20">
+        <div className="p-4 mb-6 bg-red-50 rounded-lg border border-red-200 dark:bg-red-900/20">
           <div className="text-red-700 dark:text-red-400">
             <h3 className="mb-2 font-semibold">Error</h3>
             <p>{error}</p>
@@ -112,7 +112,7 @@ export function ComplianceReport({
       <SectionWithHeading
         heading={
           onShareClick ? (
-            <div className="flex items-center justify-between">
+            <div className="flex justify-between items-center">
               <div>Profile</div>
               <ui.Button
                 variant="outline"
@@ -130,7 +130,7 @@ export function ComplianceReport({
         icon={User}
       >
         <ScientistCard scientist={scientist} emptyMessage={`No data found for ORCID: ${orcid}`} />
-        <div className="flex items-center justify-end w-full row">
+        <div className="flex justify-end items-center w-full row">
           <ui.Button variant="link" className="text-xs" onClick={handleHelpClick}>
             Something not right? Request help.
           </ui.Button>
