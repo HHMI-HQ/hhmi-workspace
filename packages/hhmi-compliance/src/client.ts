@@ -18,6 +18,7 @@ import { GeneralHelpRequestEmailTemplate } from './backend/emails/general-help-r
 import { PublicationHelpRequestEmailTemplate } from './backend/emails/publication-help-request-email.js';
 import { WorkspaceInvitationEmailTemplate } from './backend/emails/workspace-invitation-email.js';
 import { registerNavigation } from './navigation.js';
+import { ComplianceWizardTaskCard } from './ComplianceWizardTaskCard.js';
 
 export const id = 'hhmi-compliance';
 export const name = 'HHMI Compliance';
@@ -31,6 +32,12 @@ export function getTasks(): ExtensionTask[] {
       description:
         'Get an up to date review of the compliance of your preprints and journal articles.',
       component: ComplianceReportTaskCard,
+    },
+    {
+      id: 'compliance-wizard',
+      name: 'Get Help with Open Access Policy Compliance',
+      description: 'Answer questions to understand your compliance requirements',
+      component: ComplianceWizardTaskCard,
     },
   ];
 }

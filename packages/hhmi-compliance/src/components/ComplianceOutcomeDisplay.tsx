@@ -2,8 +2,8 @@ import { ComplianceTextRenderer } from './ComplianceTextRenderer.js';
 import type { WizardOutcome } from '../common/complianceTypes.js';
 import { ui, cn, usePingEvent } from '@curvenote/scms-core';
 import { BioRxivTaskCard } from '../BioRxivTaskCard.js';
-import { PMCDepositTaskCard } from '../DepositTaskCard.js';
-import { PMCTrackEvent } from '../analytics/events.js';
+import { getTasks } from '@hhmi/pmc/client';
+import { HHMITrackEvent } from '../analytics/events.js';
 import { useEffect, useRef } from 'react';
 
 interface OutcomeDisplayProps {
@@ -66,6 +66,9 @@ function DisplayBioRxivAction({ outcome, index }: { outcome: WizardOutcome; inde
 }
 
 function DisplayPMCDepositAction({ outcome, index }: { outcome: WizardOutcome; index?: number }) {
+  const tasks = getTasks();
+  const Component = tasks.find((task) => task.id === 'pmc-deposit')?.component;
+
   return (
     <>
       <ui.SimpleAlert
@@ -80,7 +83,12 @@ function DisplayPMCDepositAction({ outcome, index }: { outcome: WizardOutcome; i
       />
       <div className="flex justify-center py-2 not-prose">
         <div className="w-[360px] mt-8">
-          <PMCDepositTaskCard />
+          {Component && <Component />}
+          {!Component && (
+            <div className="p-4 text-center text-gray-500 border border-gray-300">
+              Unable to display PMC deposit task card
+            </div>
+          )}
         </div>
       </div>
     </>
@@ -106,7 +114,7 @@ export function ComplianceOutcomeDisplay({ outcomes, className }: OutcomeDisplay
 
     if (!hasTrackedOutcomeView.current) {
       pingEvent(
-        PMCTrackEvent.COMPLIANCE_WIZARD_OUTCOME_VIEWED,
+        HHMITrackEvent.COMPLIANCE_WIZARD_OUTCOME_VIEWED,
         {
           outcomes: outcomes.map((o) => o.id),
           outcomeCount: outcomes.length,

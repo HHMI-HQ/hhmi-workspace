@@ -41,9 +41,9 @@ export function CoveredArticleItem({
       <div className="px-6 pt-4 pb-5 space-y-3">
         <div className="flex flex-col gap-1">
           {/* Row 1: Main metadata - Most recent title and top-level data */}
-          <div className="grid grid-cols-12">
+          <div className="grid grid-cols-12 gap-2">
             {/* Column 1: Title (takes more space) */}
-            <div className="col-span-12 md:col-span-10">
+            <div className="col-span-12 md:col-span-9">
               <h3 className="font-normal leading-tight line-clamp-2">
                 <span
                   className="text-blue-600 transition-colors cursor-pointer group hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
@@ -73,7 +73,7 @@ export function CoveredArticleItem({
               </h3>
             </div>
             {/* Column 2: Compliance */}
-            <div className="flex justify-center col-span-4 items-top md:col-span-2">
+            <div className="flex col-span-12 justify-center items-top md:col-span-3">
               <div>
                 <ComplianceBadge
                   compliant={item.compliant ?? false}
@@ -87,7 +87,7 @@ export function CoveredArticleItem({
           <div className="text-xs">{summarizeAuthorList(item.authors)}</div>
           <div className="text-xs">{formatDate(item.date ?? '')}</div>
         </div>
-        <div className="flex flex-col max-w-2xl gap-0 divide-y divide-gray-200">
+        <div className="flex flex-col gap-0 max-w-2xl divide-y divide-gray-200">
           <div className="grid grid-cols-12 gap-4 p-1 text-xs font-light text-center even:bg-gray-50 odd:bg-white">
             <div className="col-span-12 md:col-span-3"></div>
             <div className="col-span-12 md:col-span-3">License</div>
@@ -98,13 +98,13 @@ export function CoveredArticleItem({
           {item.preprint?.doi && (
             <div className="grid grid-cols-12 gap-4 px-1 text-xs">
               {/* Column 1: Preprint label */}
-              <div className="flex items-center col-span-12 pl-1 text-sm text-center md:col-span-3">
+              <div className="flex col-span-12 items-center pl-1 text-sm text-center md:col-span-3">
                 <ui.Button variant="link" size="sm" asChild>
                   <a
                     href={item.preprint.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-center"
+                    className="inline-flex gap-1 items-center text-center"
                     onClick={() =>
                       pingEvent(
                         HHMITrackEvent.HHMI_COMPLIANCE_URL_LINK_CLICKED,
@@ -127,21 +127,21 @@ export function CoveredArticleItem({
               </div>
 
               {/* Column 2: Compliance */}
-              <div className="flex items-center justify-center col-span-4 md:col-span-3">
+              <div className="flex col-span-4 justify-center items-center md:col-span-3">
                 <div className="flex gap-[2px] items-center text-xs">
                   {formatLicenseForDisplay(item.preprint.license) ?? 'UNKNOWN'}
                 </div>
               </div>
 
               {/* Column 3: Compliance Issue */}
-              <div className="flex items-center col-span-4 text-center md:col-span-3">
+              <div className="flex col-span-4 items-center text-center md:col-span-3">
                 <div className="w-full text-center text-muted-foreground">
                   {item.preprint.complianceIssueType ?? '—'}
                 </div>
               </div>
 
               {/* Column 4: Compliance Status */}
-              <div className="flex items-center col-span-4 text-center md:col-span-3">
+              <div className="flex col-span-4 items-center text-center md:col-span-3">
                 <IssueStatusWithTooltip
                   issueStatus={item.preprint.complianceIssueStatus}
                   issueType={item.preprint.complianceIssueType}
@@ -153,13 +153,13 @@ export function CoveredArticleItem({
           {item.journal && (
             <div className="grid grid-cols-12 gap-4 px-1 text-xs">
               {/* Column 1: Journal article label */}
-              <div className="flex items-center col-span-12 pl-1 text-xs text-center md:col-span-3">
+              <div className="flex col-span-12 items-center pl-1 text-xs text-center md:col-span-3">
                 <ui.Button variant="link" size="sm" asChild>
                   <a
                     href={item.journal.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-center"
+                    className="inline-flex gap-1 items-center text-center"
                     onClick={() =>
                       pingEvent(
                         HHMITrackEvent.HHMI_COMPLIANCE_URL_LINK_CLICKED,
@@ -181,21 +181,21 @@ export function CoveredArticleItem({
                 </ui.Button>
               </div>
               {/* Column 2: Compliance */}
-              <div className="flex items-center justify-center col-span-4 text-center md:col-span-3">
+              <div className="flex col-span-4 justify-center items-center text-center md:col-span-3">
                 <div className="flex gap-[2px] items-center text-xs">
                   {formatLicenseForDisplay(item.journal.license) ?? '—'}
                 </div>
               </div>
 
               {/* Column 3: Compliance Issue */}
-              <div className="flex items-center col-span-4 text-center md:col-span-3">
+              <div className="flex col-span-4 items-center text-center md:col-span-3">
                 <div className="w-full text-center text-muted-foreground">
                   {item.journal.complianceIssueType ?? '—'}
                 </div>
               </div>
 
               {/* Column 4: Compliance Status */}
-              <div className="flex items-center col-span-4 text-center md:col-span-3">
+              <div className="flex col-span-4 items-center text-center md:col-span-3">
                 <IssueStatusWithTooltip
                   issueStatus={item.journal.complianceIssueStatus}
                   issueType={item.journal.complianceIssueType}

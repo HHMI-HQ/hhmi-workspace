@@ -1,9 +1,6 @@
 import { Heading, Text, Section } from '@react-email/components';
 import React from 'react';
-import type {
-  ComplianceWizardState,
-  ComplianceWizardConfig,
-} from '../../common/complianceTypes.js';
+import type { ComplianceWizardState, ComplianceWizardConfig } from '../common/complianceTypes.js';
 
 /**
  * Formats wizard responses in human-readable format

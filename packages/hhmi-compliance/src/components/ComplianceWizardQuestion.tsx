@@ -2,9 +2,9 @@ import React from 'react';
 import { WizardQuestion, type SpecialRenderer } from '@curvenote/scms-core';
 import type { WizardQuestion as ComplianceQuestion } from '../common/complianceTypes.js';
 import { processPublishingStageBold } from './ComplianceTextRenderer.js';
-import { processMarkdownFormatting } from './markdownTextHelpers.js';
+import { processMarkdownFormatting } from '../common/markdownTextHelpers.js';
 import { usePingEvent } from '@curvenote/scms-core';
-import { PMCTrackEvent } from '../analytics/events.js';
+import { HHMITrackEvent } from '../analytics/events.js';
 // Import SVG assets
 import openAccessIcon from '../assets/open-access.svg';
 import closedAccessIcon from '../assets/closed-access.svg';
@@ -36,10 +36,10 @@ const ccOtherIcons = [
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ccOtherRenderer: SpecialRenderer = (_option, _isSelected) => (
-  <div className="flex flex-col items-start justify-center flex-grow gap-2 my-2">
+  <div className="flex flex-col flex-grow gap-2 justify-center items-start my-2">
     {ccOtherIcons.map((ccIcon, index) => (
-      <div key={index} className="flex items-center justify-start gap-2">
-        <div className="flex flex-row items-center justify-center w-12 gap-1">
+      <div key={index} className="flex gap-2 justify-start items-center">
+        <div className="flex flex-row gap-1 justify-center items-center w-12">
           {ccIcon.icons.map((iconSrc, iconIndex) => (
             <img
               key={iconIndex}
@@ -101,7 +101,7 @@ export function ComplianceWizardQuestion({
     // Track if this is a change (not initial answer)
     if (previousAnswer !== null && previousAnswer !== undefined) {
       pingEvent(
-        PMCTrackEvent.COMPLIANCE_WIZARD_QUESTION_CHANGED,
+        HHMITrackEvent.COMPLIANCE_WIZARD_QUESTION_CHANGED,
         {
           questionId: question.id,
           questionTitle: question.title,
@@ -112,7 +112,7 @@ export function ComplianceWizardQuestion({
       );
     } else {
       pingEvent(
-        PMCTrackEvent.COMPLIANCE_WIZARD_QUESTION_ANSWERED,
+        HHMITrackEvent.COMPLIANCE_WIZARD_QUESTION_ANSWERED,
         {
           questionId: question.id,
           questionTitle: question.title,

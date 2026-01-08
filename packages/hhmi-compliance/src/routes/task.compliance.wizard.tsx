@@ -11,7 +11,7 @@ import {
 import { ComplianceWizard } from '../components/ComplianceWizard.js';
 import type { ComplianceWizardConfig, ComplianceWizardState } from '../common/complianceTypes.js';
 import { complianceWizardConfig } from '../common/compliance-wizard.config.js';
-import { composeHelpRequestEmailBody } from '../backend/email/compose-help-request-email.js';
+import { composeHelpRequestEmailBody } from '../email/compose-help-request-email.js';
 
 interface LoaderData {
   config: ComplianceWizardConfig;

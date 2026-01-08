@@ -20,6 +20,27 @@ export enum HHMITrackEvent {
   HHMI_COMPLIANCE_HELP_REQUESTED = 'HHMI Compliance Help Requested',
   HHMI_COMPLIANCE_REPORT_TASK_CLICKED = 'HHMI Compliance Report Task Card Clicked',
   HHMI_COMPLIANCE_ROLE_QUALIFIED = 'HHMI Compliance Role Qualified',
+
+  // Wizard flow events
+  COMPLIANCE_WIZARD_CLICKED = 'PMC Compliance Wizard Clicked',
+  COMPLIANCE_WIZARD_STARTED = 'PMC Compliance Wizard Started',
+  COMPLIANCE_WIZARD_COMPLETED = 'PMC Compliance Wizard Completed',
+  COMPLIANCE_WIZARD_RESTARTED = 'PMC Compliance Wizard Restarted',
+  COMPLIANCE_WIZARD_FINISHED = 'PMC Compliance Wizard Finished',
+
+  // Question interaction events
+  COMPLIANCE_WIZARD_QUESTION_ANSWERED = 'PMC Compliance Wizard Question Answered',
+  COMPLIANCE_WIZARD_QUESTION_CHANGED = 'PMC Compliance Wizard Question Changed',
+
+  // Outcome action events
+  COMPLIANCE_WIZARD_OUTCOME_VIEWED = 'PMC Compliance Wizard Outcome Viewed',
+  COMPLIANCE_WIZARD_BIORXIV_CLICKED = 'PMC Compliance Wizard BioRxiv Link Clicked',
+  COMPLIANCE_WIZARD_PMC_DEPOSIT_CLICKED = 'PMC Compliance Wizard PMC Deposit Clicked',
+  COMPLIANCE_WIZARD_HELP_LINK_CLICKED = 'PMC Compliance Wizard Help Link Clicked',
+
+  COMPLIANCE_WIZARD_CONFIRM_USEFUL = 'PMC Compliance Wizard Confirmed Useful',
+  COMPLIANCE_WIZARD_CONFIRM_NEED_HELP = 'PMC Compliance Wizard Confirmed Need Help',
+  COMPLIANCE_WIZARD_HELP_REQUEST_SUBMITTED = 'PMC Compliance Wizard Help Request Submitted',
 }
 
 export const HHMITrackEventDescriptions: Record<HHMITrackEvent, string> = {
@@ -53,4 +74,31 @@ export const HHMITrackEventDescriptions: Record<HHMITrackEvent, string> = {
     'User clicked the compliance report task card from dashboard',
   [HHMITrackEvent.HHMI_COMPLIANCE_ROLE_QUALIFIED]:
     'User qualified their compliance role (scientist or lab-manager)',
+  [HHMITrackEvent.COMPLIANCE_WIZARD_CLICKED]:
+    'User clicked the compliance wizard task card button on dashboard',
+  [HHMITrackEvent.COMPLIANCE_WIZARD_STARTED]: 'User started the PMC compliance wizard page',
+  [HHMITrackEvent.COMPLIANCE_WIZARD_COMPLETED]:
+    'User completed the PMC compliance wizard; only tracks the first completion after wizard start, does not fire again after restart',
+  [HHMITrackEvent.COMPLIANCE_WIZARD_RESTARTED]:
+    'User clicked the Start Over button in PMC compliance wizard',
+  [HHMITrackEvent.COMPLIANCE_WIZARD_FINISHED]:
+    'User clicked Finish button in PMC compliance wizard',
+
+  [HHMITrackEvent.COMPLIANCE_WIZARD_QUESTION_ANSWERED]:
+    'User answered a question in the PMC compliance wizard',
+  [HHMITrackEvent.COMPLIANCE_WIZARD_QUESTION_CHANGED]:
+    'User changed an answer in the PMC compliance wizard',
+
+  [HHMITrackEvent.COMPLIANCE_WIZARD_OUTCOME_VIEWED]:
+    'User viewed compliance outcomes; fires every time outcomes change during the wizard session',
+  [HHMITrackEvent.COMPLIANCE_WIZARD_BIORXIV_CLICKED]: 'User clicked on BioRxiv submission link',
+  [HHMITrackEvent.COMPLIANCE_WIZARD_PMC_DEPOSIT_CLICKED]: 'User clicked on PMC deposit task card',
+  [HHMITrackEvent.COMPLIANCE_WIZARD_HELP_LINK_CLICKED]: 'User clicked on help link',
+
+  [HHMITrackEvent.COMPLIANCE_WIZARD_CONFIRM_USEFUL]:
+    'After completing the wizard, user confirmed the wizard was useful',
+  [HHMITrackEvent.COMPLIANCE_WIZARD_CONFIRM_NEED_HELP]:
+    'After completing the wizard, user confirmed they stil needed help',
+  [HHMITrackEvent.COMPLIANCE_WIZARD_HELP_REQUEST_SUBMITTED]:
+    'User submitted a help request form after indicating they needed help',
 };

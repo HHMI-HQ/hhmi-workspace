@@ -1,7 +1,7 @@
 import { useFetcher } from 'react-router';
 import { primitives, LoadingSpinner, usePingEvent } from '@curvenote/scms-core';
 import bioRxivGraphic from './assets/bioRxiv-favicon.svg';
-import { PMCTrackEvent } from './analytics/events.js';
+import { HHMITrackEvent } from './analytics/events.js';
 
 type ActionData = { error?: string } | undefined;
 
@@ -17,7 +17,7 @@ export function BioRxivTaskCard() {
       rel="noopener noreferrer"
       onClick={() => {
         pingEvent(
-          PMCTrackEvent.COMPLIANCE_WIZARD_BIORXIV_CLICKED,
+          HHMITrackEvent.COMPLIANCE_WIZARD_BIORXIV_CLICKED,
           {
             url: 'https://www.biorxiv.org/submit-a-manuscript',
           },
@@ -35,7 +35,7 @@ export function BioRxivTaskCard() {
           className="absolute inset-0 w-full h-full cursor-pointer hover:bg-accent/50"
           disabled={isSubmitting}
         >
-          <div className="flex items-center h-full gap-4 ml-3 mr-2">
+          <div className="flex gap-4 items-center mr-2 ml-3 h-full">
             <div className="flex-shrink-0">
               <img src={bioRxivGraphic} alt="bioRxiv logo" className="w-20 h-20" />
             </div>
@@ -48,7 +48,7 @@ export function BioRxivTaskCard() {
           </div>
         </button>
         {isSubmitting && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white/80">
+          <div className="flex absolute inset-0 justify-center items-center bg-white/80">
             <LoadingSpinner size={32} color="text-blue-600" thickness={4} />
           </div>
         )}

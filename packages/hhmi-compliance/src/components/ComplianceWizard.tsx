@@ -6,7 +6,7 @@ import { createComplianceWizardLogic } from '../common/complianceWizardLogic.js'
 import { SectionWithHeading, usePingEvent, ui } from '@curvenote/scms-core';
 import { ListTodo, CircleCheck } from 'lucide-react';
 import { useNavigate, useBlocker, useFetcher } from 'react-router';
-import { PMCTrackEvent } from '../analytics/events.js';
+import { HHMITrackEvent } from '../analytics/events.js';
 import { useEffect, useRef, useState } from 'react';
 
 interface ComplianceWizardProps {
@@ -37,7 +37,7 @@ export function ComplianceWizard({ config }: ComplianceWizardProps) {
   useEffect(() => {
     if (!hasTrackedStart.current) {
       pingEvent(
-        PMCTrackEvent.COMPLIANCE_WIZARD_STARTED,
+        HHMITrackEvent.COMPLIANCE_WIZARD_STARTED,
         {},
         { anonymous: true, ignoreAdmin: true },
       );
@@ -104,7 +104,7 @@ export function ComplianceWizard({ config }: ComplianceWizardProps) {
   );
 
   const handleFinish = () => {
-    pingEvent(PMCTrackEvent.COMPLIANCE_WIZARD_FINISHED, {}, { anonymous: true });
+    pingEvent(HHMITrackEvent.COMPLIANCE_WIZARD_FINISHED, {}, { anonymous: true });
     // Show feedback dialog before navigating
     if (hasTrackedCompleted.current) {
       setPendingNavigation('/app/works');
@@ -120,7 +120,7 @@ export function ComplianceWizard({ config }: ComplianceWizardProps) {
 
     if (!hasTrackedCompleted.current) {
       pingEvent(
-        PMCTrackEvent.COMPLIANCE_WIZARD_COMPLETED,
+        HHMITrackEvent.COMPLIANCE_WIZARD_COMPLETED,
         { outcomes, state },
         { anonymous: true, ignoreAdmin: true },
       );
@@ -130,7 +130,7 @@ export function ComplianceWizard({ config }: ComplianceWizardProps) {
 
   const handleFeedbackYes = () => {
     pingEvent(
-      PMCTrackEvent.COMPLIANCE_WIZARD_CONFIRM_USEFUL,
+      HHMITrackEvent.COMPLIANCE_WIZARD_CONFIRM_USEFUL,
       {},
       { anonymous: true, ignoreAdmin: true },
     );
@@ -148,7 +148,7 @@ export function ComplianceWizard({ config }: ComplianceWizardProps) {
 
   const handleFeedbackNo = () => {
     pingEvent(
-      PMCTrackEvent.COMPLIANCE_WIZARD_CONFIRM_NEED_HELP,
+      HHMITrackEvent.COMPLIANCE_WIZARD_CONFIRM_NEED_HELP,
       {},
       { anonymous: true, ignoreAdmin: true },
     );
@@ -206,7 +206,7 @@ export function ComplianceWizard({ config }: ComplianceWizardProps) {
   const handleHelpRequestSubmit = () => {
     // Track help request submission
     pingEvent(
-      PMCTrackEvent.COMPLIANCE_WIZARD_HELP_REQUEST_SUBMITTED,
+      HHMITrackEvent.COMPLIANCE_WIZARD_HELP_REQUEST_SUBMITTED,
       { hasAdditionalInfo: !!additionalInfo, includeResponses },
       { anonymous: true, ignoreAdmin: true },
     );
@@ -240,7 +240,7 @@ export function ComplianceWizard({ config }: ComplianceWizardProps) {
 
   const handleStartOver = () => {
     pingEvent(
-      PMCTrackEvent.COMPLIANCE_WIZARD_RESTARTED,
+      HHMITrackEvent.COMPLIANCE_WIZARD_RESTARTED,
       {},
       { anonymous: true, ignoreAdmin: true },
     );
@@ -248,7 +248,7 @@ export function ComplianceWizard({ config }: ComplianceWizardProps) {
 
   const handleStillNeedHelp = () => {
     pingEvent(
-      PMCTrackEvent.COMPLIANCE_WIZARD_HELP_LINK_CLICKED,
+      HHMITrackEvent.COMPLIANCE_WIZARD_HELP_LINK_CLICKED,
       {},
       { anonymous: true, ignoreAdmin: true },
     );
@@ -292,7 +292,7 @@ export function ComplianceWizard({ config }: ComplianceWizardProps) {
           footerButtons={[{ label: 'Close', onClick: handleSuccessClose }]}
         >
           <div className="flex flex-col items-center py-6">
-            <CircleCheck className="w-16 h-16 mb-4 text-green-600" />
+            <CircleCheck className="mb-4 w-16 h-16 text-green-600" />
             <h2 className="text-lg font-semibold leading-none text-center">Request Sent</h2>
             <p className="mt-2 text-base text-center text-muted-foreground">
               Your request has been sent to the HHMI Open Science Team. We'll get back to you as

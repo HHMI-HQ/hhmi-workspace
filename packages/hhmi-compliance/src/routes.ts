@@ -27,9 +27,16 @@ const routes = [
       'scientists/:orcid',
       resolveRoutePath(import.meta.url, 'routes/compliance.scientists.$orcid.tsx'),
     ),
+
     // Action routes
     route('help-request', resolveRoutePath(import.meta.url, 'routes/compliance.help-request.tsx')),
+
+    // Compliance Wizard
   ]),
+  route(
+    'task/compliance-wizard',
+    resolveRoutePath(import.meta.url, 'routes/task.compliance.wizard.tsx'),
+  ),
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

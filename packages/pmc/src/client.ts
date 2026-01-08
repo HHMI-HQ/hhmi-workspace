@@ -10,7 +10,6 @@ import type {
   WorkflowRegistration,
 } from '@curvenote/scms-core';
 import { registerNavigation } from './navigation.js';
-import { ComplianceWizardTaskCard } from './ComplianceWizardTaskCard.js';
 import { PMCDepositTaskCard } from './DepositTaskCard.js';
 import { PMCIcon } from './Icon.js';
 import { PMCTrackEvent, PMCTrackEventDescriptions } from './analytics/events.js';
@@ -22,12 +21,6 @@ export const description = 'Submit to PubMed Central';
 
 export function getTasks(): ExtensionTask[] {
   return [
-    {
-      id: 'pmc-compliance',
-      name: 'Get Help with Open Access Policy Compliance',
-      description: 'Answer questions to understand your compliance requirements',
-      component: ComplianceWizardTaskCard,
-    },
     {
       id: 'pmc-deposit',
       name: 'PMC Deposit',

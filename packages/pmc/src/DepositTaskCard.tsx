@@ -26,7 +26,7 @@ export function PMCDepositTaskCard() {
 
     // Track PMC deposit task card click
     pingEvent(
-      PMCTrackEvent.COMPLIANCE_WIZARD_PMC_DEPOSIT_CLICKED,
+      PMCTrackEvent.PMC_DEPOSIT_TASK_CARD_CLICKED,
       {},
       { anonymous: true, ignoreAdmin: true },
     );
@@ -75,16 +75,16 @@ export function PMCDepositTaskCard() {
     <>
       <primitives.Card
         lift
-        className="relative h-full p-0 transition-colors bg-white border-stone-400"
+        className="relative p-0 h-full bg-white transition-colors border-stone-400"
         validateUsing={fetcher}
       >
         <button
           type="button"
           onClick={handleCardClick}
-          className="w-full h-full px-2 py-4 cursor-pointer hover:bg-accent/50"
+          className="px-2 py-4 w-full h-full cursor-pointer hover:bg-accent/50"
           disabled={isSubmitting || isCheckingDrafts}
         >
-          <div className="flex items-center h-full gap-2 mx-2">
+          <div className="flex gap-2 items-center mx-2 h-full">
             <div className="flex-shrink-0">
               <img src={pmcGraphic} alt="PMC Deposit" className="w-20 h-20" />
             </div>
@@ -97,7 +97,7 @@ export function PMCDepositTaskCard() {
           </div>
         </button>
         {(isSubmitting || isCheckingDrafts) && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white/80">
+          <div className="flex absolute inset-0 justify-center items-center bg-white/80">
             <LoadingSpinner size={32} color="text-blue-600" thickness={4} />
           </div>
         )}

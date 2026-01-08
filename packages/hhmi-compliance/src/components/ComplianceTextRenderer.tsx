@@ -1,6 +1,6 @@
 import React from 'react';
 import { LoadableIframe } from '@curvenote/scms-core';
-import { processMarkdownFormatting } from './markdownTextHelpers.js';
+import { processMarkdownFormatting } from '../common/markdownTextHelpers.js';
 
 interface ComplianceTextRendererProps {
   text: string;
@@ -153,7 +153,7 @@ function processIframes(text: string): React.ReactNode[] {
                 src={src}
                 width={widthMatch ? widthMatch[1] : '100%'}
                 height={heightMatch ? heightMatch[1] : '533'}
-                className="border border-gray-300 rounded"
+                className="rounded border border-gray-300"
                 style={{ background: 'transparent' }}
                 sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
                 allow="encrypted-media"
