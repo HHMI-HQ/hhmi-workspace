@@ -48,7 +48,7 @@ export function JournalLinkBadge({
           href={buildUrl(doi)}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1"
+          className="inline-flex gap-1 items-center"
           onClick={() =>
             pingEvent(
               HHMITrackEvent.HHMI_COMPLIANCE_DOI_LINK_CLICKED,
@@ -105,7 +105,7 @@ export function PreprintLinkBadge({
           href={buildUrl(preprintDoi)}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1"
+          className="inline-flex gap-1 items-center"
           onClick={() =>
             pingEvent(
               HHMITrackEvent.HHMI_COMPLIANCE_DOI_LINK_CLICKED,
@@ -138,6 +138,7 @@ export function PubMedLink({
   orcid,
   viewContext,
   viewLocation,
+  preprint,
 }: {
   pmid: string;
   publicationId: string;
@@ -146,11 +147,16 @@ export function PubMedLink({
   orcid?: string;
   viewContext: ViewContext;
   viewLocation: ViewLocation;
+  preprint?: boolean;
 }) {
   const pingEvent = usePingEvent();
 
   return (
-    <ui.SimpleTooltip title={`PMID: ${pmid}`} asChild={false} delayDuration={1000}>
+    <ui.SimpleTooltip
+      title={preprint ? `PMID (preprint): ${pmid}` : `PMID: ${pmid}`}
+      asChild={false}
+      delayDuration={1000}
+    >
       <ui.Button variant="link" size={size} asChild>
         <a
           href={`https://pubmed.ncbi.nlm.nih.gov/${pmid}/`}
@@ -174,7 +180,7 @@ export function PubMedLink({
             )
           }
         >
-          PubMed
+          {preprint ? 'PubMed (preprint)' : 'PubMed'}
           <ExternalLink className="w-3 h-3" />
         </a>
       </ui.Button>
@@ -190,6 +196,7 @@ export function PubMedLinkBadge({
   orcid,
   viewContext,
   viewLocation,
+  preprint,
 }: {
   pmid: string;
   publicationId: string;
@@ -198,17 +205,22 @@ export function PubMedLinkBadge({
   orcid?: string;
   viewContext: ViewContext;
   viewLocation: ViewLocation;
+  preprint?: boolean;
 }) {
   const pingEvent = usePingEvent();
 
   return (
-    <ui.SimpleTooltip title={`PMID: ${pmid}`} asChild={false} delayDuration={1000}>
+    <ui.SimpleTooltip
+      title={preprint ? `PMID (preprint): ${pmid}` : `PMID: ${pmid}`}
+      asChild={false}
+      delayDuration={1000}
+    >
       <ui.Badge variant="outline" size={size} asChild>
         <a
           href={`https://pubmed.ncbi.nlm.nih.gov/${pmid}/`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1"
+          className="inline-flex gap-1 items-center"
           onClick={() =>
             pingEvent(
               HHMITrackEvent.HHMI_COMPLIANCE_PUBMED_LINK_CLICKED,
@@ -226,7 +238,7 @@ export function PubMedLinkBadge({
             )
           }
         >
-          PubMed
+          {preprint ? 'PubMed (preprint)' : 'PubMed'}
           <ExternalLink className="w-3 h-3" />
         </a>
       </ui.Badge>
@@ -242,6 +254,7 @@ export function PMCLinkBadge({
   orcid,
   viewContext,
   viewLocation,
+  preprint,
 }: {
   pmcid: string;
   publicationTitle: string;
@@ -250,12 +263,13 @@ export function PMCLinkBadge({
   orcid?: string;
   viewContext: ViewContext;
   viewLocation: ViewLocation;
+  preprint?: boolean;
 }) {
   const pingEvent = usePingEvent();
 
   return (
     <ui.SimpleTooltip
-      title={`PubMed Central Identifier: ${pmcid}`}
+      title={preprint ? `PubMed Central (preprint): ${pmcid}` : `PubMed Central: ${pmcid}`}
       asChild={false}
       delayDuration={1000}
     >
@@ -264,7 +278,7 @@ export function PMCLinkBadge({
           href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${pmcid}/`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1"
+          className="inline-flex gap-1 items-center"
           onClick={() =>
             pingEvent(
               HHMITrackEvent.HHMI_COMPLIANCE_PMC_LINK_CLICKED,
@@ -282,7 +296,7 @@ export function PMCLinkBadge({
             )
           }
         >
-          PMC
+          {preprint ? 'PubMed Central (preprint)' : 'PubMed Central'}
           <ExternalLink className="w-3 h-3" />
         </a>
       </ui.Badge>
@@ -298,6 +312,7 @@ export function PMCLink({
   orcid,
   viewContext,
   viewLocation,
+  preprint,
 }: {
   pmcid: string;
   publicationTitle: string;
@@ -306,12 +321,13 @@ export function PMCLink({
   orcid?: string;
   viewContext: ViewContext;
   viewLocation: ViewLocation;
+  preprint?: boolean;
 }) {
   const pingEvent = usePingEvent();
 
   return (
     <ui.SimpleTooltip
-      title={`PubMed Central Identifier: ${pmcid}`}
+      title={preprint ? `PubMed Central (preprint): ${pmcid}` : `PubMed Central: ${pmcid}`}
       asChild={false}
       delayDuration={1000}
     >
@@ -338,7 +354,7 @@ export function PMCLink({
             )
           }
         >
-          PubMed Central
+          {preprint ? 'PubMed Central (preprint)' : 'PubMed Central'}
           <ExternalLink />
         </a>
       </ui.Button>
@@ -354,6 +370,7 @@ export function CurvenotePMCLinkBadge({
   orcid,
   viewContext,
   viewLocation,
+  preprint,
 }: {
   pmcid: string;
   publicationTitle: string;
@@ -362,17 +379,22 @@ export function CurvenotePMCLinkBadge({
   orcid?: string;
   viewContext: ViewContext;
   viewLocation: ViewLocation;
+  preprint?: boolean;
 }) {
   const pingEvent = usePingEvent();
 
   return (
-    <ui.SimpleTooltip title="Enhanced PMC" asChild={false} delayDuration={1000}>
+    <ui.SimpleTooltip
+      title={preprint ? 'Enhanced PMC (preprint)' : 'Enhanced PMC'}
+      asChild={false}
+      delayDuration={1000}
+    >
       <ui.Badge variant="outline" size={size} asChild>
         <a
           href={`https://overlay.curvenote.dev/${pmcid}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1"
+          className="inline-flex gap-1 items-center"
           onClick={() =>
             pingEvent(
               HHMITrackEvent.HHMI_COMPLIANCE_ENHANCED_PMC_LINK_CLICKED,
@@ -391,7 +413,7 @@ export function CurvenotePMCLinkBadge({
           }
         >
           <Sparkles className="w-3 h-3" />
-          Enhanced PMC
+          {preprint ? 'Enhanced PMC (preprint)' : 'Enhanced PMC'}
           <sup className="text-[8px] font-bold ml-0.5">BETA</sup>
           <ExternalLink className="w-3 h-3" />
         </a>
@@ -407,6 +429,7 @@ export function CurvenotePMCLink({
   orcid,
   viewContext,
   viewLocation,
+  preprint,
 }: {
   pmcid: string;
   publicationTitle: string;
@@ -415,11 +438,16 @@ export function CurvenotePMCLink({
   orcid?: string;
   viewContext: ViewContext;
   viewLocation: ViewLocation;
+  preprint?: boolean;
 }) {
   const pingEvent = usePingEvent();
 
   return (
-    <ui.SimpleTooltip title="Enhanced PMC" asChild={false} delayDuration={1000}>
+    <ui.SimpleTooltip
+      title={preprint ? 'Enhanced PMC (preprint)' : 'Enhanced PMC'}
+      asChild={false}
+      delayDuration={1000}
+    >
       <ui.Button variant="link" size={size} asChild>
         <a
           href={`https://overlay.curvenote.dev/${pmcid}`}
@@ -444,7 +472,7 @@ export function CurvenotePMCLink({
           }
         >
           <Sparkles className="w-3 h-3" />
-          Enhanced PMC
+          {preprint ? 'Enhanced PMC (preprint)' : 'Enhanced PMC'}
           <sup className="text-[8px] font-bold ml-0.5">BETA</sup>
           <ExternalLink />
         </a>
@@ -479,7 +507,7 @@ export function CurvenotePreprintLinkBadge({
           href={`https://overlay.curvenote.dev/doi/${preprintDoi}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1"
+          className="inline-flex gap-1 items-center"
           onClick={() =>
             pingEvent(
               HHMITrackEvent.HHMI_COMPLIANCE_ENHANCED_PREPRINT_LINK_CLICKED,

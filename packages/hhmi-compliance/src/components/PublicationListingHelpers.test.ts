@@ -22,9 +22,10 @@ describe('PublicationListingHelpers', () => {
       authors: ['John Doe', 'Jane Smith'],
       year: '2023',
       compliant: true,
-      pmid: '12345',
-      pmcid: 'PMC12345',
       journal: {
+        title: 'Test Journal 1',
+        pmid: '1234567890',
+        pmcid: '1234567890',
         doi: '10.1234/journal1',
         complianceIssueType: 'License Issue',
         complianceIssueStatus: 'Resolved',
@@ -228,7 +229,7 @@ describe('PublicationListingHelpers', () => {
     it('should search by PMID', () => {
       const results = searchPublications(mockPublications, '12345');
       expect(results).toHaveLength(1);
-      expect(results[0].pmid).toBe('12345');
+      expect(results[0].journal?.pmid).toBe('1234567890');
     });
 
     it('should be case insensitive', () => {

@@ -319,12 +319,12 @@ export function searchPublications(
     }
 
     // Search PMID
-    if (pub.pmid?.toLowerCase().includes(searchLower)) {
+    if (pub.journal?.pmid?.toLowerCase().includes(searchLower)) {
       return true;
     }
 
     // Search PMCID
-    if (pub.pmcid?.toLowerCase().includes(searchLower)) {
+    if (pub.journal?.pmcid?.toLowerCase().includes(searchLower)) {
       return true;
     }
 

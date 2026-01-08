@@ -32,10 +32,18 @@ function formatPublicationInfo(publication: NormalizedArticleRecord): React.Reac
 
   // Publication Identifiers
   const identifiers: string[] = [];
-  if (publication.pmid) identifiers.push(`PubMed ID: ${publication.pmid}`);
-  if (publication.pmcid) identifiers.push(`PubMed Central ID: ${publication.pmcid}`);
-  if (publication.journal?.doi) identifiers.push(`Journal DOI: ${publication.journal.doi}`);
-  if (publication.preprint?.doi) identifiers.push(`Preprint DOI: ${publication.preprint.doi}`);
+  if (publication.preprint) {
+    const { pmid, pmcid, doi } = publication.preprint;
+    if (pmid) identifiers.push(`PubMed ID: ${pmid}`);
+    if (pmcid) identifiers.push(`PubMed Central ID: ${pmcid}`);
+    if (doi) identifiers.push(`Preprint DOI: ${doi}`);
+  }
+  if (publication.journal) {
+    const { pmid, pmcid, doi } = publication.journal;
+    if (pmid) identifiers.push(`PubMed ID: ${pmid}`);
+    if (pmcid) identifiers.push(`PubMed Central ID: ${pmcid}`);
+    if (doi) identifiers.push(`Journal DOI: ${doi}`);
+  }
 
   if (identifiers.length > 0) {
     sections.push(

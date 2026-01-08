@@ -33,11 +33,27 @@ export function ArticleLinks({
   // Build array of link elements
   const linkElements: React.ReactNode[] = [];
 
-  if (item.pmid) {
+  if (item.preprint?.pmid) {
     linkElements.push(
       <PubMedLink
-        key="pubmed-link"
-        pmid={item.pmid}
+        key="pubmed-preprint-link"
+        pmid={item.preprint.pmid}
+        publicationId={item.id}
+        publicationTitle={item.preprint?.title ?? item.title ?? ''}
+        size={size}
+        orcid={orcid}
+        viewContext={viewContext}
+        viewLocation={viewLocation}
+        preprint
+      />,
+    );
+  }
+
+  if (item.journal?.pmid) {
+    linkElements.push(
+      <PubMedLink
+        key="pubmed-journal-link"
+        pmid={item.journal.pmid}
         publicationId={item.id}
         publicationTitle={item.journal?.title ?? item.title ?? ''}
         size={size}
@@ -48,13 +64,29 @@ export function ArticleLinks({
     );
   }
 
-  if (item.pmcid) {
+  if (item.preprint?.pmcid) {
     linkElements.push(
       <PMCLink
-        key="pmc-link"
-        pmcid={item.pmcid}
+        key="pmc-preprint-link"
+        pmcid={item.preprint.pmcid}
         publicationId={item.id}
-        publicationTitle={item.journal?.title ?? item.title ?? ''}
+        publicationTitle={item.preprint?.title ?? item.title ?? ''}
+        size={size}
+        orcid={orcid}
+        viewContext={viewContext}
+        viewLocation={viewLocation}
+        preprint
+      />,
+    );
+  }
+
+  if (item.journal?.pmcid) {
+    linkElements.push(
+      <PMCLink
+        key="pmc-journal-link"
+        pmcid={item.journal.pmcid}
+        publicationId={item.id}
+        publicationTitle={item.preprint?.title ?? item.title ?? ''}
         size={size}
         orcid={orcid}
         viewContext={viewContext}
@@ -63,11 +95,27 @@ export function ArticleLinks({
     );
   }
 
-  if (item.pmcid && isCCBY(item.journal?.license)) {
+  if (item.preprint?.pmcid && isCCBY(item.preprint?.license)) {
     linkElements.push(
       <CurvenotePMCLink
-        key="curvenote-pmc-link"
-        pmcid={item.pmcid}
+        key="curvenote-pmc-preprint-link"
+        pmcid={item.preprint.pmcid}
+        publicationId={item.id}
+        publicationTitle={item.preprint?.title ?? item.title ?? ''}
+        size={size}
+        orcid={orcid}
+        viewContext={viewContext}
+        viewLocation={viewLocation}
+        preprint
+      />,
+    );
+  }
+
+  if (item.journal?.pmcid && isCCBY(item.journal?.license)) {
+    linkElements.push(
+      <CurvenotePMCLink
+        key="curvenote-pmc-journal-link"
+        pmcid={item.journal.pmcid}
         publicationId={item.id}
         publicationTitle={item.journal?.title ?? item.title ?? ''}
         size={size}
@@ -97,7 +145,7 @@ export function ArticleLinks({
 
   return (
     <div className={cn('grid grid-cols-12 gap-4 dark:border-gray-800', className)}>
-      <div className="flex flex-wrap items-center col-span-12 gap-2">
+      <div className="flex flex-wrap col-span-12 gap-2 items-center">
         {linkElements.map((element, index) => (
           <React.Fragment key={index}>
             {element}

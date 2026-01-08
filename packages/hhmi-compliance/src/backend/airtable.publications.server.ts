@@ -32,8 +32,7 @@ export function normalizePublicationRecordsToArticleRecord(
     authors,
     date,
     year,
-    pmid: cleanString(fields[PUBLICATION_FIELDS.pmid.id]),
-    pmcid: cleanString(fields[PUBLICATION_FIELDS.pmcid.id]),
+
     compliant: getBoolean(fields[PUBLICATION_FIELDS.top_level_compliance.id]),
     everNonCompliant: getBoolean(fields[PUBLICATION_FIELDS.ever_non_compliant.id]),
     dateResolved: cleanString(fields[PUBLICATION_FIELDS.date_resolved_for_interface.id]),
@@ -48,6 +47,8 @@ export function normalizePublicationRecordsToArticleRecord(
       year,
       doi: cleanString(fields[PUBLICATION_FIELDS.doi.id]),
       url: cleanString(fields[PUBLICATION_FIELDS.url.id]),
+      pmid: cleanString(fields[PUBLICATION_FIELDS.pmid.id]),
+      pmcid: cleanString(fields[PUBLICATION_FIELDS.pmcid.id]),
       publisher: cleanString(fields[PUBLICATION_FIELDS.publisher.id]),
       license: cleanLicenseString(fields[PUBLICATION_FIELDS.publisher_license_best.id]),
       complianceIssueType: cleanString(fields[PUBLICATION_FIELDS.issue_type.id]),

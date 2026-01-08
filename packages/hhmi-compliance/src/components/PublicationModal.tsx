@@ -371,81 +371,6 @@ export function PublicationModal({
 
           {/* Detailed Information List */}
           <div className="space-y-4">
-            {/* General Publication IDs */}
-            <div>
-              <h3 className="mb-2 text-sm font-semibold text-muted-foreground">
-                Publication Identifiers
-              </h3>
-              <dl className="flex flex-col gap-2 py-2 max-w-none">
-                <Item
-                  label="PubMed ID"
-                  value={
-                    pub.pmid ? (
-                      <a
-                        href={`https://pubmed.ncbi.nlm.nih.gov/${pub.pmid}/`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="underline"
-                        onClick={() =>
-                          pingEvent(
-                            HHMITrackEvent.HHMI_COMPLIANCE_PUBMED_LINK_CLICKED,
-                            {
-                              publicationId: pub.id,
-                              publicationTitle: pub.title,
-                              linkType: 'PubMed',
-                              pmid: pub.pmid,
-                              linkUrl: `https://pubmed.ncbi.nlm.nih.gov/${pub.pmid}/`,
-                              orcid: scientist.orcid,
-                              viewContext,
-                              viewLocation: 'modal',
-                            },
-                            { anonymous: true },
-                          )
-                        }
-                      >
-                        {pub.pmid}
-                      </a>
-                    ) : (
-                      'Not available'
-                    )
-                  }
-                />
-                <Item
-                  label="PubMed Central ID"
-                  value={
-                    pub.pmcid ? (
-                      <a
-                        href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${pub.pmcid}/`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="underline"
-                        onClick={() =>
-                          pingEvent(
-                            HHMITrackEvent.HHMI_COMPLIANCE_PMC_LINK_CLICKED,
-                            {
-                              publicationId: pub.id,
-                              publicationTitle: pub.title,
-                              linkType: 'PMC',
-                              pmcid: pub.pmcid,
-                              linkUrl: `https://www.ncbi.nlm.nih.gov/pmc/articles/${pub.pmcid}/`,
-                              orcid: scientist.orcid,
-                              viewContext,
-                              viewLocation: 'modal',
-                            },
-                            { anonymous: true },
-                          )
-                        }
-                      >
-                        {pub.pmcid}
-                      </a>
-                    ) : (
-                      'Not available'
-                    )
-                  }
-                />
-              </dl>
-            </div>
-
             {/* Journal Publication Information */}
             {pub.journal && (
               <div>
@@ -455,6 +380,78 @@ export function PublicationModal({
                 <dl className="flex flex-col gap-2 py-2 max-w-none">
                   {pub.journal.date && (
                     <Item label="Publication Date" value={formatDate(pub.journal.date)} />
+                  )}
+                  {pub.journal?.pmid && (
+                    <Item
+                      label="PubMed ID"
+                      value={
+                        pub.journal?.pmid ? (
+                          <a
+                            href={`https://pubmed.ncbi.nlm.nih.gov/${pub.journal.pmid}/`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline"
+                            onClick={() => {
+                              if (!pub.journal?.pmid) return;
+                              pingEvent(
+                                HHMITrackEvent.HHMI_COMPLIANCE_PUBMED_LINK_CLICKED,
+                                {
+                                  publicationId: pub.id,
+                                  publicationTitle: pub.title,
+                                  linkType: 'PubMed',
+                                  pmid: pub.journal.pmid,
+                                  linkUrl: `https://pubmed.ncbi.nlm.nih.gov/${pub.journal.pmid}/`,
+                                  orcid: scientist.orcid,
+                                  viewContext,
+                                  viewLocation: 'modal',
+                                },
+                                { anonymous: true },
+                              );
+                            }}
+                          >
+                            {pub.journal.pmid}
+                          </a>
+                        ) : (
+                          'Not available'
+                        )
+                      }
+                    />
+                  )}
+                  {pub.journal?.pmcid && (
+                    <Item
+                      label="PubMed Central ID"
+                      value={
+                        pub.journal?.pmcid ? (
+                          <a
+                            href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${pub.journal.pmcid}/`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline"
+                            onClick={() => {
+                              if (!pub.journal?.pmcid) return;
+                              pingEvent(
+                                HHMITrackEvent.HHMI_COMPLIANCE_PMC_LINK_CLICKED,
+                                {
+                                  publicationId: pub.id,
+                                  publicationTitle: pub.title,
+                                  linkType: 'PMC',
+                                  pmcid: pub.journal.pmcid,
+                                  linkUrl: `https://www.ncbi.nlm.nih.gov/pmc/articles/${pub.journal.pmcid}/`,
+                                  orcid: scientist.orcid,
+                                  viewContext,
+                                  viewLocation: 'modal',
+                                },
+                                { anonymous: true },
+                              );
+                            }}
+                          >
+                            {pub.journal.pmcid}
+                          </a>
+                        ) : (
+                          'Not available'
+                        )
+                      }
+                    />
                   )}
                   {pub.journal.doi && (
                     <Item
@@ -513,6 +510,78 @@ export function PublicationModal({
                 <dl className="flex flex-col gap-2 py-2 max-w-none">
                   {pub.preprint.date && (
                     <Item label="Posted Date" value={formatDate(pub.preprint.date)} />
+                  )}
+                  {pub.preprint?.pmid && (
+                    <Item
+                      label="PubMed ID"
+                      value={
+                        pub.preprint?.pmid ? (
+                          <a
+                            href={`https://pubmed.ncbi.nlm.nih.gov/${pub.preprint.pmid}/`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline"
+                            onClick={() => {
+                              if (!pub.preprint?.pmid) return;
+                              pingEvent(
+                                HHMITrackEvent.HHMI_COMPLIANCE_PUBMED_LINK_CLICKED,
+                                {
+                                  publicationId: pub.id,
+                                  publicationTitle: pub.title,
+                                  linkType: 'PubMed',
+                                  pmid: pub.preprint.pmid,
+                                  linkUrl: `https://pubmed.ncbi.nlm.nih.gov/${pub.preprint.pmid}/`,
+                                  orcid: scientist.orcid,
+                                  viewContext,
+                                  viewLocation: 'modal',
+                                },
+                                { anonymous: true },
+                              );
+                            }}
+                          >
+                            {pub.preprint.pmid}
+                          </a>
+                        ) : (
+                          'Not available'
+                        )
+                      }
+                    />
+                  )}
+                  {pub.preprint?.pmcid && (
+                    <Item
+                      label="PubMed Central ID"
+                      value={
+                        pub.preprint?.pmcid ? (
+                          <a
+                            href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${pub.preprint.pmcid}/`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline"
+                            onClick={() => {
+                              if (!pub.preprint?.pmcid) return;
+                              pingEvent(
+                                HHMITrackEvent.HHMI_COMPLIANCE_PMC_LINK_CLICKED,
+                                {
+                                  publicationId: pub.id,
+                                  publicationTitle: pub.title,
+                                  linkType: 'PMC',
+                                  pmcid: pub.preprint.pmcid,
+                                  linkUrl: `https://www.ncbi.nlm.nih.gov/pmc/articles/${pub.preprint.pmcid}/`,
+                                  orcid: scientist.orcid,
+                                  viewContext,
+                                  viewLocation: 'modal',
+                                },
+                                { anonymous: true },
+                              );
+                            }}
+                          >
+                            {pub.preprint.pmcid}
+                          </a>
+                        ) : (
+                          'Not available'
+                        )
+                      }
+                    />
                   )}
                   {pub.preprint.doi && (
                     <Item

@@ -9,8 +9,6 @@ export interface NormalizedArticleRecord {
   authors?: string[];
   date?: string;
   year?: string;
-  pmid?: string;
-  pmcid?: string;
   compliant?: boolean;
   everNonCompliant?: boolean;
   dateResolved?: string;
@@ -26,6 +24,8 @@ export interface NormalizedArticleRecord {
     year?: string;
     doi?: string;
     url?: string;
+    pmid?: string;
+    pmcid?: string;
     license?: string;
     server?: string;
     complianceIssueType?: string;
@@ -42,6 +42,8 @@ export interface NormalizedArticleRecord {
     year?: string;
     doi?: string;
     url?: string;
+    pmid?: string;
+    pmcid?: string;
     publisher?: string;
     license?: string;
     complianceIssueType?: string;
