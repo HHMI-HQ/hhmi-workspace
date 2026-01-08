@@ -1,5 +1,5 @@
 // Generated compliance wizard configuration
-// Generated on: 2025-09-30T10:49:54.689Z
+// Generated on: 2026-01-08T11:01:03.835Z
 // Source files: compliance-simplified.csv, compliance-next-steps.csv
 // This file is auto-generated. Do not edit manually.
 // Total unique mappings: 100
@@ -41,7 +41,7 @@ export const complianceWizardConfig: ComplianceWizardConfig = {
         {
           value: 'no_preprint_2025',
           label:
-            'I have not published a preprint, and my manuscript was or will be submitted to a journal in 2025',
+            'I have not published a preprint, and my manuscript was submitted to a journal in 2025',
         },
         {
           value: 'no_preprint_2026',
@@ -51,7 +51,7 @@ export const complianceWizardConfig: ComplianceWizardConfig = {
         {
           value: 'preprint_submitted_2025',
           label:
-            'I have already published a preprint, and my manuscript was or will be submitted to a journal in 2025',
+            'I have already published a preprint, and my manuscript was submitted to a journal in 2025',
         },
         {
           value: 'preprint_submitted_2026',

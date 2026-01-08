@@ -40,11 +40,11 @@ const valueMappings: Record<string, any> = {
   // Publishing Stage
   'I am ready to submit a preprint to a preprint server': 'preprint_ready',
   'I have a preprint that is ready for submission': 'preprint_ready', // Legacy support
-  'I have not published a preprint, and my manuscript was or will be submitted to a journal in 2025':
+  'I have not published a preprint, and my manuscript was submitted to a journal in 2025':
     'no_preprint_2025',
   'I have not published a preprint, and my manuscript was or will be submitted to a journal in 2026 or later':
     'no_preprint_2026',
-  'I have already published a preprint, and my manuscript was or will be submitted to a journal in 2025':
+  'I have already published a preprint, and my manuscript was submitted to a journal in 2025':
     'preprint_submitted_2025',
   'I have already published a preprint, and my manuscript was or will be submitted to a journal in 2026 or later':
     'preprint_submitted_2026',
@@ -448,9 +448,9 @@ function getOrderedPublishingStageOptions(): string[] {
     'I am ready to submit a preprint to a preprint server',
     'I have a preprint that is ready for submission', // Legacy support
 
-    'I have not published a preprint, and my manuscript was or will be submitted to a journal in 2025',
+    'I have not published a preprint, and my manuscript was submitted to a journal in 2025',
     'I have not published a preprint, and my manuscript was or will be submitted to a journal in 2026 or later',
-    'I have already published a preprint, and my manuscript was or will be submitted to a journal in 2025',
+    'I have already published a preprint, and my manuscript was submitted to a journal in 2025',
     'I have already published a preprint, and my manuscript was or will be submitted to a journal in 2026 or later',
   ];
 
