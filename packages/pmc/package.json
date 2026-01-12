@@ -2,9 +2,9 @@
   "name": "@hhmi/pmc",
   "private": true,
   "version": "0.0.1",
-  "description": "PMC extension for Curvenote SCMS applications",
-  "author": "Rowan Cockett <rowan@curvenote.com>",
-  "homepage": "https://github.com/curvenote/journals",
+  "description": "PMC extension for the HHMI Workspace - powered by Curvenote.",
+  "author": "Curvenote <support@curvenote.com>",
+  "homepage": "https://github.com/HHMI-HQ/hhmi-workspace",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
@@ -29,7 +29,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/curvenote/journals.git"
+    "url": "git+https://github.com/HHMI-HQ/hhmi-workspace.git"
   },
   "scripts": {
     "prepush": "npm run lint:format:fix; npm run lint:circular; npm run lint; npm run compile; npm run test:ci; npm run test:unit; npm run test:integration",

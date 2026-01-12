@@ -1,0 +1,12 @@
+welcome:
+  title: 'Welcome to the HHMI Workspace'
+  tagline: 'One integrated platform for compliance support and research communication'
+  description: |
+    The HHMI Workspace is designed to help you navigate compliance with publishing policies and provide tools that strengthen the integrity of your work. As the platform evolves, you’ll gain access to additional resources that will support you in preparing to share your research.
+
+    These tools are offered for informational purposes only. The information provided through these tools does not represent: 1) a guarantee of compliance with any other funders’ or institutions’ policies, 2) a substitute for responsible research practices, or (3) a certification that any paper is free of integrity concerns.
+  showTasks: true
+  videos:
+    - title: 'Introducing the HHMI Workspace'
+      url: https://workspace-cdn.hhmi.org/static/welcome/hhmi-rci-launch-v4.mp4
+      thumbnail: https://workspace-cdn.hhmi.org/static/welcome/hhmi-sep19-draft.png
