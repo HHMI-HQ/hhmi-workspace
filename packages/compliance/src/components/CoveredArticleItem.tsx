@@ -77,6 +77,11 @@ export function CoveredArticleItem({
               <div>
                 <ComplianceBadge
                   compliant={item.compliant ?? false}
+                  resolved={
+                    item.compliant &&
+                    (item.journal?.complianceIssueStatus?.toLowerCase() === 'resolved' ||
+                      item.preprint?.complianceIssueStatus?.toLowerCase() === 'resolved')
+                  }
                   reason={item.preprint?.complianceIssueType ?? item.journal?.complianceIssueType}
                   isMajorContributor={item.isLinkedToPrimaryOrcid}
                   onClick={handleModalOpen}

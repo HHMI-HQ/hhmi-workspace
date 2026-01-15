@@ -595,12 +595,14 @@ export function CurvenotePreprintLink({
 
 export function ComplianceBadge({
   compliant,
+  resolved,
   reason,
   size,
   onClick,
   isMajorContributor,
 }: {
   compliant: boolean;
+  resolved?: boolean;
   reason?: string;
   size?: ui.BadgeSize;
   onClick?: () => void;
@@ -613,7 +615,13 @@ export function ComplianceBadge({
   ) : (
     <X className="w-3 h-3 text-destructive" />
   );
-  const text = compliant ? 'Compliant' : 'Non-compliant';
+
+  let text = 'Compliant';
+  if (!compliant) {
+    text = 'Non-compliant';
+  } else if (resolved) {
+    text = 'Resolved';
+  }
 
   const badge = (
     <ui.Badge
