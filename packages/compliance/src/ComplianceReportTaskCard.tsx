@@ -43,7 +43,7 @@ export function ComplianceReportTaskCard() {
             <img src={myOpenAccessComplianceIcon} alt="Check Compliance" className="w-20 h-20" />
           </div>
           <div className="flex-1 text-left">
-            <h3 className="text-lg font-normal">View Your Open Access Compliance</h3>
+            <h3 className="text-lg font-normal">My Compliance Dashboard</h3>
             <p className="text-sm text-muted-foreground">
               See the current status of your preprints and journal articles in relation to HHMI's
               open access policies.

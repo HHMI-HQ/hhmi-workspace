@@ -38,7 +38,7 @@ export function ComplianceWizardTaskCard() {
             <img src={checkComplianceIcon} alt="Check Compliance" className="w-20 h-20" />
           </div>
           <div className="flex-1 text-left">
-            <h3 className="text-lg font-normal">Get Help with Open Access Policy Compliance</h3>
+            <h3 className="text-lg font-normal">Compliance Helper</h3>
             <p className="text-sm text-muted-foreground">
               Planning to publish? Answer a few questions to understand HHMI and NIH open access
               policy requirements and receive guidance on next steps.
