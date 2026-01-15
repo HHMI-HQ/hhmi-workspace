@@ -105,7 +105,6 @@ export default function ComplianceReportPage({ loaderData }: { loaderData: Loade
   // Otherwise, render the normal compliance report
   return (
     <PageFrame
-      enableProvider={true}
       title="Compliance Dashboard"
       className="mx-auto max-w-screen-lg"
       description={<ComplianceInfoCards className="mt-4" dashboard={!isOrcidLinkedButNotFound} />}

@@ -112,7 +112,6 @@ export default function LinkAccountLayout() {
 
   return (
     <PageFrame
-      enableProvider={true}
       title="Access My Compliance Dashboard"
       className="mx-auto mb-6 max-w-screen-lg"
       description={<ComplianceInfoCards className="mt-4" />}
