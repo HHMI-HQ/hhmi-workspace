@@ -1,11 +1,18 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useFetcher } from 'react-router';
-import { ui, primitives, usePingEvent } from '@curvenote/scms-core';
+import {
+  ui,
+  primitives,
+  usePingEvent,
+  InviteUserDialog,
+  useDeploymentConfig,
+} from '@curvenote/scms-core';
 import { AlertCircle } from 'lucide-react';
 import type { GeneralError } from '@curvenote/scms-core';
 import { AccessGrantItem } from './AccessGrantItem.js';
 import { ShareReportForm } from './ShareReportForm.js';
 import { HHMITrackEvent } from '../analytics/events.js';
+import { NormalizedScientist } from 'src/backend/types.js';
 
 interface AccessGrant {
   id: string;
@@ -20,8 +27,7 @@ interface AccessGrant {
 interface ShareReportDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  orcid: string;
-  scientistName?: string | null;
+  scientist: NormalizedScientist;
   actionUrl: string;
   compact?: boolean;
 }
@@ -51,7 +57,13 @@ function LoadingSkeleton({ compact = false }: { compact?: boolean }) {
   );
 }
 
-function ScientistNotFoundCard({ compact = false }: { compact?: boolean }) {
+function ScientistNotFoundCard({
+  compact = false,
+  displayName,
+}: {
+  compact?: boolean;
+  displayName?: string;
+}) {
   const paddingClass = compact ? 'p-4' : 'p-6';
   return (
     <primitives.Card
@@ -61,11 +73,12 @@ function ScientistNotFoundCard({ compact = false }: { compact?: boolean }) {
         <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
         <div className="flex-1">
           <h4 className="mb-1 font-medium text-yellow-900 dark:text-yellow-100">
-            Scientist Not Found
+            {displayName ?? 'Scientist'} not found
           </h4>
           <p className="text-sm text-yellow-800 dark:text-yellow-200">
-            This scientist does not have a user account in the HHMI Workspace yet. They must create
-            an account and link their ORCID before their compliance dashboard can be shared.
+            {displayName ?? 'This scientist'} does not have a user account in the HHMI Workspace
+            yet. They must create an account and link their ORCID before their compliance dashboard
+            can be shared.
           </p>
         </div>
       </div>
@@ -157,8 +170,7 @@ function CurrentAccessList({
 export function ShareReportDialog({
   open,
   onOpenChange,
-  orcid,
-  scientistName,
+  scientist,
   actionUrl,
   compact = false,
 }: ShareReportDialogProps) {
@@ -166,12 +178,17 @@ export function ShareReportDialog({
   const [grantsRequested, setGrantsRequested] = useState<boolean>(false);
   const [scientistExists, setScientistExists] = useState<boolean | null>(null);
   const [accessGrants, setAccessGrants] = useState<AccessGrant[]>([]);
+  const [scientistEmail, setScientistEmail] = useState<string | null>(null);
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const config = useDeploymentConfig();
+  const platformName = config.branding?.title || config.name || 'the workspace';
 
   // Fetcher for loading access grants
   const grantsFetcher = useFetcher<{
     exists: boolean;
     accessGrants: AccessGrant[];
     scientistName?: string | null;
+    scientistEmail?: string | null;
     error?: GeneralError | string;
   }>();
 
@@ -180,21 +197,21 @@ export function ShareReportDialog({
     if (grantsFetcher.state === 'idle') {
       const formData = new FormData();
       formData.append('intent', 'get-access-grants');
-      formData.append('orcid', orcid);
+      formData.append('orcid', scientist.orcid);
       grantsFetcher.submit(formData, { method: 'POST', action: actionUrl });
     }
-  }, [orcid, actionUrl]);
+  }, [scientist.orcid, actionUrl]);
 
   // Load access grants when dialog opens
   useEffect(() => {
     if (open && !grantsRequested) {
       const formData = new FormData();
       formData.append('intent', 'get-access-grants');
-      formData.append('orcid', orcid);
+      formData.append('orcid', scientist.orcid);
       grantsFetcher.submit(formData, { method: 'POST', action: actionUrl });
       setGrantsRequested(true);
     }
-  }, [open, orcid, actionUrl, grantsFetcher]);
+  }, [open, scientist.orcid, actionUrl, grantsFetcher]);
 
   // Update state when grants are loaded
   useEffect(() => {
@@ -202,6 +219,7 @@ export function ShareReportDialog({
       if (grantsFetcher.data.error) return;
       setScientistExists(grantsFetcher.data.exists ?? false);
       setAccessGrants(grantsFetcher.data.accessGrants ?? []);
+      setScientistEmail(grantsFetcher.data.scientistEmail ?? null);
     }
   }, [grantsFetcher.state, grantsFetcher.data]);
 
@@ -215,8 +233,8 @@ export function ShareReportDialog({
       pingEvent(
         HHMITrackEvent.HHMI_COMPLIANCE_REPORT_SHARE_MODAL_CLOSED,
         {
-          orcid,
-          scientistName,
+          orcid: scientist.orcid,
+          scientistName: scientist.fullName,
           closeMethod: 'x-button-or-click-outside-or-escape',
         },
         { anonymous: true },
@@ -225,14 +243,29 @@ export function ShareReportDialog({
     onOpenChange(dialogOpen);
   };
 
-  const displayName = scientistName || `ORCID ${orcid}`;
-  const gapClass = compact ? 'gap-3' : 'gap-4';
+  const displayName = scientist.fullName || `ORCID ${scientist.orcid}`;
+  const gapClass = compact ? 'gap-6' : 'gap-8';
 
   let content = null;
   if (scientistExists === null) {
     content = <LoadingSkeleton compact={compact} />;
   } else if (scientistExists === false) {
-    content = <ScientistNotFoundCard compact={compact} />;
+    content = (
+      <div className={`flex flex-col ${gapClass}`}>
+        <ScientistNotFoundCard compact={compact} displayName={displayName} />
+        <div className="flex justify-center">
+          <ui.Button
+            className="cursor-pointer"
+            type="button"
+            variant="default"
+            size={compact ? 'sm' : 'default'}
+            onClick={() => setInviteDialogOpen(true)}
+          >
+            Invite {displayName} to the {platformName}
+          </ui.Button>
+        </div>
+      </div>
+    );
   } else {
     content = (
       <div className={`flex flex-col ${gapClass}`}>
@@ -240,7 +273,7 @@ export function ShareReportDialog({
           actionUrl={actionUrl}
           compact={compact}
           onSuccess={handleShareSuccess}
-          additionalFields={orcid ? { orcid } : undefined}
+          additionalFields={scientist.orcid ? { orcid: scientist.orcid } : undefined}
           description={
             !compact
               ? 'Search and select a user to share this compliance dashboard with. They will be able to view the compliance data and publications.'
@@ -258,16 +291,29 @@ export function ShareReportDialog({
     );
   }
   return (
-    <ui.Dialog open={open} onOpenChange={handleDialogOpenChange}>
-      <ui.DialogContent variant="wide" className="max-h-[75vh] overflow-y-auto">
-        <ui.DialogHeader>
-          <ui.DialogTitle>Grant access to this user's dashboard</ui.DialogTitle>
-          <ui.DialogDescription>
-            Manage access to {displayName}'s compliance dashboard
-          </ui.DialogDescription>
-        </ui.DialogHeader>
-        {content}
-      </ui.DialogContent>
-    </ui.Dialog>
+    <>
+      <ui.Dialog open={open} onOpenChange={handleDialogOpenChange}>
+        <ui.DialogContent variant="wide" className="max-h-[75vh] overflow-y-auto">
+          <ui.DialogHeader>
+            <ui.DialogTitle>Grant access to this user's dashboard</ui.DialogTitle>
+            <ui.DialogDescription>
+              Manage access to {displayName}'s compliance dashboard
+            </ui.DialogDescription>
+          </ui.DialogHeader>
+          {content}
+        </ui.DialogContent>
+      </ui.Dialog>
+      <InviteUserDialog
+        open={inviteDialogOpen}
+        onOpenChange={setInviteDialogOpen}
+        actionUrl={actionUrl}
+        platformName={platformName}
+        title={`Invite ${displayName} to ${platformName}`}
+        description="Send an invitation email to this scientist so they can join the workspace and link their ORCID to access their compliance dashboard."
+        successMessage="Invitation sent successfully. They will receive an email with instructions to join and link their ORCID."
+        context={scientist.orcid ? { orcid: scientist.orcid } : undefined}
+        initialEmail={scientist.email || undefined}
+      />
+    </>
   );
 }

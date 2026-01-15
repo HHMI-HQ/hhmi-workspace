@@ -1,5 +1,11 @@
 import type { Context } from '@curvenote/scms-core';
-import { getPrismaClient, $updateSubmissionVersion, SlackEventType } from '@curvenote/scms-server';
+import {
+  getPrismaClient,
+  $updateSubmissionVersion,
+  SlackEventType,
+  INBOUND_EMAIL_PAYLOAD_SCHEMA,
+  INBOUND_EMAIL_RESULTS_SCHEMA,
+} from '@curvenote/scms-server';
 import { uuidv7 } from 'uuidv7';
 import type { PackageResult } from './handlers/bulk-submission-parser.server.js';
 import { safelyUpdatePMCSubmissionVersionMetadata } from '../submission-version-metadata.utils.server.js';
@@ -7,6 +13,7 @@ import type { EmailProcessing } from '../../common/metadata.schema.js';
 
 /**
  * Creates a new Message record in the database
+ * Includes schema in results for UI rendering
  */
 export async function createMessageRecord(
   ctx: Context,
@@ -15,6 +22,50 @@ export async function createMessageRecord(
 ): Promise<string> {
   const prisma = await getPrismaClient();
   const now = new Date().toISOString();
+
+  // Add schema to payload indicating it's an unknown structure
+  const payloadWithSchema = {
+    ...payload,
+    $schema: INBOUND_EMAIL_PAYLOAD_SCHEMA,
+  };
+
+  // Extract structured data from CloudMailin payload for schema-based rendering
+  const structuredResults = {
+    $schema: INBOUND_EMAIL_RESULTS_SCHEMA,
+    from: payload.envelope?.from || payload.headers?.from || 'unknown',
+    to: Array.isArray(payload.envelope?.to)
+      ? payload.envelope.to[0]
+      : payload.envelope?.to || payload.headers?.to || 'unknown',
+    subject: payload.headers?.subject || 'no subject',
+    receivedAt: payload.headers?.date || payload.envelope?.date || now,
+    headers: payload.headers
+      ? {
+          from: payload.headers.from,
+          to: payload.headers.to,
+          subject: payload.headers.subject,
+          date: payload.headers.date,
+        }
+      : undefined,
+    envelope: payload.envelope
+      ? {
+          from: payload.envelope.from,
+          to: payload.envelope.to,
+        }
+      : undefined,
+    plain: payload.plain,
+    html: payload.html,
+  };
+
+  // Merge with existing results if provided
+  const finalResults = results
+    ? {
+        ...structuredResults,
+        ...results,
+        // Ensure schema is at the top level
+        $schema: structuredResults.$schema,
+      }
+    : structuredResults;
+
   const message = await prisma.message.create({
     data: {
       id: uuidv7(),
@@ -23,8 +74,8 @@ export async function createMessageRecord(
       module: 'PMC',
       type: 'inbound_email',
       status: 'PENDING',
-      payload,
-      results,
+      payload: payloadWithSchema,
+      results: finalResults,
     },
   });
 

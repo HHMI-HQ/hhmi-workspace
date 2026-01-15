@@ -70,7 +70,11 @@ function ScientistActions({
       <ui.Button
         variant="outline"
         disabled={!scientist.orcid}
-        title={!scientist.orcid ? 'No ORCID available for this scientist' : undefined}
+        title={
+          !scientist.orcid
+            ? `No ORCID available for ${scientist.fullName ?? 'this scientist'}`
+            : undefined
+        }
       >
         <Link
           to={scientist.orcid ? `${baseUrl}/${scientist.orcid}` : '#'}
@@ -230,8 +234,7 @@ export function ScientistListItem({
         <ShareReportDialog
           open={shareDialogOpen}
           onOpenChange={setShareDialogOpen}
-          orcid={scientist.orcid}
-          scientistName={scientist.fullName}
+          scientist={scientist}
           actionUrl="/app/compliance/scientists"
           compact={true}
         />
