@@ -1,4 +1,4 @@
-import { Heading, Text, Section } from '@react-email/components';
+import { Button, Heading, Text, Section } from '@react-email/components';
 import React from 'react';
 
 /**
@@ -83,6 +83,49 @@ export function GeneralHelpRequestEmail(params: {
           </Section>
         </>
       )}
+    </>
+  );
+}
+
+/**
+ * Composes the email body for a dashboard sharing request
+ */
+export function DashboardRequestEmail(params: {
+  requesterName: string;
+  requesterEmail: string;
+  recipientName?: string;
+  sharePageUrl: string;
+}): React.ReactNode {
+  const { requesterName, requesterEmail, recipientName, sharePageUrl } = params;
+
+  return (
+    <>
+      <Heading className="mx-0 my-[30px] p-0 text-[24px] font-normal text-black">
+        Dashboard Sharing Request
+      </Heading>
+      <Text className="text-[14px] text-black leading-[24px]">
+        Hello{recipientName ? ` ${recipientName}` : ''},
+      </Text>
+      <Text className="text-[14px] text-black leading-[24px]">
+        <strong>{requesterName}</strong> ({requesterEmail}) has requested that you share your
+        compliance dashboard with them.
+      </Text>
+      <Text className="text-[14px] text-black leading-[24px]">
+        To grant access to your compliance dashboard, please visit the link below and use the form
+        to share your dashboard with {requesterName}.
+      </Text>
+      <Section className="mt-[32px] mb-[32px] text-center">
+        <Button
+          className="rounded bg-[#000000] px-5 py-3 text-center font-semibold text-[12px] text-white no-underline"
+          href={sharePageUrl}
+        >
+          Share My Dashboard
+        </Button>
+      </Section>
+      <Text className="text-[14px] text-black leading-[24px]">
+        If you have any questions or concerns, please contact {requesterName} directly at{' '}
+        {requesterEmail}.
+      </Text>
     </>
   );
 }

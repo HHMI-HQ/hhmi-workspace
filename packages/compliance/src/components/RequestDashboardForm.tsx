@@ -3,21 +3,19 @@ import { primitives, ui, cn, InviteUserDialog, useDeploymentConfig } from '@curv
 import { useRef, useState, useCallback, useEffect } from 'react';
 import type { GeneralError } from '@curvenote/scms-core';
 
-interface ShareReportFormProps {
+interface RequestDashboardFormProps {
   actionUrl?: string;
   compact?: boolean;
   onSuccess?: () => void;
-  additionalFields?: Record<string, string>;
   description?: string;
 }
 
-export function ShareReportForm({
+export function RequestDashboardForm({
   actionUrl,
   compact = false,
   onSuccess,
-  additionalFields,
   description,
-}: ShareReportFormProps = {}) {
+}: RequestDashboardFormProps = {}) {
   const form = useRef<HTMLFormElement>(null);
   const fetcher = useFetcher<{
     success?: boolean;
@@ -49,7 +47,7 @@ export function ShareReportForm({
       } else if (fetcher.data.success) {
         // Handle success case
         ui.toastSuccess(
-          'Access granted successfully. The user will receive an email with instructions on how to access the compliance dashboard.',
+          'Request sent successfully. The user will receive an email with instructions on how to share their compliance dashboard.',
         );
         // Reset form on success
         setSelectedUser('');
@@ -117,22 +115,15 @@ export function ShareReportForm({
     }
 
     const formData = new FormData();
-    formData.append('intent', 'share');
+    formData.append('intent', 'request-dashboard');
     formData.append('recipientUserId', selectedUser);
-
-    // Add any additional fields (e.g., orcid for admin sharing)
-    if (additionalFields) {
-      Object.entries(additionalFields).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-    }
 
     fetcher.submit(formData, { method: 'POST', ...(actionUrl ? { action: actionUrl } : {}) });
   };
 
   const defaultDescription =
     description ||
-    'Search and select a user, to give them access to your compliance dashboard. They will be able to view your compliance data and publications. They will not be able to give access to others.';
+    'Search and select a user to request access to their compliance dashboard. They will receive an email with a link to share their dashboard with you.';
 
   const emptyMessage = (
     <div className="flex flex-col gap-2 items-center py-2">
@@ -158,7 +149,7 @@ export function ShareReportForm({
         >
           <div className="flex gap-2 items-center">
             <h3 className={cn('font-medium', compact ? 'text-sm' : 'text-md')}>
-              Give Someone Access to My Dashboard
+              Request Access to a Dashboard
             </h3>
           </div>
 
@@ -195,7 +186,7 @@ export function ShareReportForm({
                 busy={fetcher.state !== 'idle'}
                 disabled={fetcher.state !== 'idle' || !selectedUser}
               >
-                Submit
+                Send Request
               </ui.StatefulButton>
             </div>
           </div>
@@ -223,9 +214,8 @@ export function ShareReportForm({
         actionUrl={actionUrl}
         platformName={platformName}
         title={`Invite Someone to ${platformName}`}
-        description="Send an invitation email to someone who should join the workspace and gain access to compliance dashboards."
+        description="Send an invitation email to someone who should join the workspace. Once they join, you can request access to their compliance dashboard."
         successMessage="Invitation sent successfully. They will receive an email with instructions to join."
-        context={additionalFields}
       />
     </>
   );

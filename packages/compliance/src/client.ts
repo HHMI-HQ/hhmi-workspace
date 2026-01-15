@@ -14,6 +14,7 @@ import { ComplianceReportTaskCard } from './ComplianceReportTaskCard.js';
 import { HHMITrackEvent, HHMITrackEventDescriptions } from './analytics/events.js';
 import { ComplianceReportSharedEmail } from './backend/emails/compliance-report-shared.js';
 import { ComplianceReportRequestEmailTemplate } from './backend/emails/compliance-report-request-email.js';
+import { DashboardRequestEmailTemplate } from './backend/emails/dashboard-request-email.js';
 import { GeneralHelpRequestEmailTemplate } from './backend/emails/general-help-request-email.js';
 import { PublicationHelpRequestEmailTemplate } from './backend/emails/publication-help-request-email.js';
 import { WorkspaceInvitationEmailTemplate } from './backend/emails/workspace-invitation-email.js';
@@ -286,6 +287,44 @@ export function getEmailTemplates(): ExtensionEmailTemplate[] {
             type: 'textarea',
             optional: true,
             example: 'Looking forward to collaborating with you on compliance dashboards.',
+          },
+        ],
+      },
+    },
+    {
+      eventType: 'COMPLIANCE_DASHBOARD_REQUEST',
+      component: DashboardRequestEmailTemplate,
+      props: {},
+      templateInfo: {
+        name: 'Compliance Dashboard Request',
+        description:
+          'Email sent when a user requests another user to share their compliance dashboard',
+        exampleSubject: 'Dashboard Sharing Request',
+        fields: [
+          {
+            name: 'requesterName',
+            label: 'Requester Name',
+            type: 'text',
+            example: 'Dr. Jane Smith',
+          },
+          {
+            name: 'requesterEmail',
+            label: 'Requester Email',
+            type: 'email',
+            example: 'jane.smith@example.com',
+          },
+          {
+            name: 'recipientName',
+            label: 'Recipient Name',
+            type: 'text',
+            optional: true,
+            example: 'Dr. John Doe',
+          },
+          {
+            name: 'sharePageUrl',
+            label: 'Share Page URL',
+            type: 'url',
+            example: 'https://app.curvenote.com/app/compliance/share',
           },
         ],
       },
