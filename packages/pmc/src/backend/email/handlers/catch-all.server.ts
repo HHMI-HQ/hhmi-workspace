@@ -10,7 +10,7 @@ import {
   updateSubmissionMetadataAndStatusIfChanged,
 } from '../email-db.server.js';
 import { getPrismaClient } from '@curvenote/scms-server';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@curvenote/scms-db';
 import { extractManuscriptId } from './email-parsing-utils.server.js';
 
 /**

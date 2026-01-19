@@ -1,5 +1,5 @@
 import { getPrismaClient } from '@curvenote/scms-server';
-import { ActivityType } from '@prisma/client';
+import { ActivityType } from '@curvenote/scms-db';
 
 /**
  * Gets all status change activities for a submission version, ordered by creation date.

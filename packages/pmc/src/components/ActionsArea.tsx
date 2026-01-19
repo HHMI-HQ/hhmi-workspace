@@ -3,14 +3,14 @@ import type { WorkflowTransition, GeneralError } from '@curvenote/scms-core';
 import { ui, usePolling } from '@curvenote/scms-core';
 import { useEffect, useCallback, useState } from 'react';
 import type { JobDTO } from '@curvenote/common';
-import { JobStatus } from '@prisma/client';
+import { JobStatus } from '@curvenote/scms-db';
 import { zfd } from 'zod-form-data';
 import { z } from 'zod';
-import type { JsonValue } from '@prisma/client/runtime/library';
+import type { Prisma } from '@curvenote/scms-db';
 
 interface SubmissionVersionTransitionInfo {
   id: string;
-  transition?: WorkflowTransition | JsonValue | null;
+  transition?: WorkflowTransition | Prisma.JsonValue | null;
 }
 
 interface TransitionActionButtonProps {
@@ -181,7 +181,7 @@ export function ActionsAreaForm({
       className={`flex ${isHorizontal ? 'flex-row items-center' : 'flex-col'} gap-2`}
     >
       {isHorizontal && activeTransition && (
-        <div className="flex items-center gap-2 animate-pulse">
+        <div className="flex gap-2 items-center animate-pulse">
           <ui.Dot />
           <div className="text-sm text-gray-400">
             {activeTransition.labels?.inProgress ?? 'in progress...'}
@@ -206,7 +206,7 @@ export function ActionsAreaForm({
       {!isHorizontal && activeTransition && (
         <>
           <div className="grow" />
-          <div className="flex items-center gap-2 animate-pulse">
+          <div className="flex gap-2 items-center animate-pulse">
             <ui.Dot />
             <div className="text-gray-400 text-sm pb-[1px]">
               {activeTransition.labels?.inProgress ?? 'in progress...'}

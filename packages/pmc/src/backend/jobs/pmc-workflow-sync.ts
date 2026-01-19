@@ -1,7 +1,7 @@
 import type { Context, CreateJob } from '@curvenote/scms-core';
 import { jobs, getPrismaClient, SlackEventType } from '@curvenote/scms-server';
-import { JobStatus, ActivityType } from '@prisma/client';
-import type { Prisma } from '@prisma/client';
+import { ActivityType, JobStatus } from '@curvenote/scms-db';
+import type { Prisma } from '@curvenote/scms-db';
 import { fetchRecordsByManuscriptIds } from '../airtable-config.server.js';
 import { formatDate } from '@curvenote/common';
 import { uuidv7 } from 'uuidv7';

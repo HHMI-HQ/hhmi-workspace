@@ -9,7 +9,8 @@ import {
   throwRedirectOr404,
 } from '@curvenote/scms-server';
 import { httpError } from '@curvenote/scms-core';
-import { SystemRole } from '@prisma/client';
+import { SystemRole } from '@curvenote/scms-db';
+
 
 export async function withAppPMCContext<T extends LoaderFunctionArgs | ActionFunctionArgs>(
   args: T,

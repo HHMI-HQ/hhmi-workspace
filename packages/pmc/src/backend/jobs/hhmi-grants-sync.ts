@@ -1,6 +1,6 @@
 import type { Context, CreateJob } from '@curvenote/scms-core';
 import { getPrismaClient, jobs } from '@curvenote/scms-server';
-import { JobStatus } from '@prisma/client';
+import { JobStatus } from '@curvenote/scms-db';
 import { formatDate } from '@curvenote/common';
 import {
   getAirtableApiKey,

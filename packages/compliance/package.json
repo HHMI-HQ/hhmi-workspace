@@ -58,9 +58,9 @@
   "dependencies": {
     "@curvenote/scms-core": "^0.13.2",
     "@curvenote/scms-server": "^0.13.2",
+    "@curvenote/scms-db": "^0.13.2",
     "@heroicons/react": "^2.2.0",
     "@hhmi/pmc": "^0.0.1",
-    "@prisma/client": "^6.18.0",
     "@react-email/components": "0.5.7",
     "@react-router/dev": "7.9.5",
     "@scienceicons/react": "^0.0.13",
@@ -98,7 +98,6 @@
     "madge": "^8.0.0",
     "prettier": "^3.5.3",
     "prettier-eslint": "^16.3.0",
-    "prisma": "^6.15.0",
     "tsup": "^8.5.1",
     "tsx": "^4.19.3",
     "typescript": "^5.6.3",

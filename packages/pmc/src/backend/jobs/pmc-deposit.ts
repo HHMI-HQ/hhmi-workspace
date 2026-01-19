@@ -17,7 +17,7 @@ import {
   generateUniqueFileLabel,
 } from '@curvenote/scms-core';
 import type { KnownBuckets } from '@curvenote/scms-server';
-import { JobStatus } from '@prisma/client';
+import { JobStatus } from '@curvenote/scms-db';
 import type { AAMDepositManifest } from 'pmc-utils';
 import { PubSub } from '@google-cloud/pubsub';
 import JOURNAL_INFO from '../../data/J_Entrez.json';

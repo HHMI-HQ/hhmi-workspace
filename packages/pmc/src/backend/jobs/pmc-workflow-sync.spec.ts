@@ -9,7 +9,7 @@ import {
   type AirtableRecord,
   type ActivityStub,
 } from './pmc-workflow-sync.js';
-import { ActivityType } from '@prisma/client';
+import { ActivityType } from '@curvenote/scms-db';
 import { PMC_STATE_NAMES } from '../../workflows.js';
 
 // Mock uuidv7 to return predictable IDs

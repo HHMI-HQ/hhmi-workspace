@@ -19,7 +19,7 @@ import {
   scopes,
 } from '@curvenote/scms-core';
 import { withAppPMCContext } from '../backend/context.server.js';
-import { JobStatus } from '@prisma/client';
+import { JobStatus } from '@curvenote/scms-db';
 import type { JobDTO } from '@curvenote/common';
 import {
   getHHMIScientists,

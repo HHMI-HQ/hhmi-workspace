@@ -2,7 +2,7 @@ import type { WorkContext } from '@curvenote/scms-server';
 import { getPrismaClient } from '@curvenote/scms-server';
 import { uuidv7 } from 'uuidv7';
 import { PMC_STATE_NAMES } from '../../workflows.js';
-import type { SubmissionVersion, WorkVersion } from '@prisma/client';
+import type { SubmissionVersion, WorkVersion } from '@curvenote/scms-db';
 import type {
   SubmissionVersionMetadataWithPMC,
   WorkVersionMetadataWithFilesAndPMC,

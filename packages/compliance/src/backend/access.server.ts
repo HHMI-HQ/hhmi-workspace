@@ -1,5 +1,5 @@
 import { getPrismaClient, createAccess, revokeAccess } from '@curvenote/scms-server';
-import type { Access, Prisma } from '@prisma/client';
+import type { Access, Prisma } from '@curvenote/scms-db';
 import type { AccessGrants } from '@curvenote/scms-server';
 import { hhmi } from './scopes.js';
 
