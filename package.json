@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "changeset": "changeset",
-    "version": "changeset version && npm install",
+    "version": "changeset version",
     "publish": "npm run clean && npm run build -- --force && changeset publish && git push --follow-tags",
     "publish:ci": "npm run build && changeset publish && git push --follow-tags",
     "build": "turbo run build",

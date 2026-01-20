@@ -2,7 +2,7 @@ import type { LoaderFunctionArgs } from 'react-router';
 import { Outlet, redirect } from 'react-router';
 import type { ServerSideMenuContents } from '@curvenote/scms-core';
 import { MainWrapper, SecondaryNav } from '@curvenote/scms-core';
-import { withAppContext, userHasScopes } from '@curvenote/scms-server';
+import { withAppContext, userHasScopes, withAppScopedContext } from '@curvenote/scms-server';
 import { buildComplianceMenu } from './menu.js';
 import myComplianceIcon from '../assets/my-compliance-lock.svg';
 import { getComplianceReportsSharedWith } from '../backend/access.server.js';
@@ -17,9 +17,9 @@ interface LoaderData {
   menu: ServerSideMenuContents;
   shouldShowSecondaryNav: boolean;
 }
-
+  
 export async function loader(args: LoaderFunctionArgs): Promise<LoaderData> {
-  const ctx = await withAppContext(args);
+  const ctx = await withAppScopedContext(args, [hhmi.compliance.feature.dashboard]);
   const pathname = new URL(args.request.url).pathname;
 
   const orcidAccount = ctx.user.linkedAccounts.find(
