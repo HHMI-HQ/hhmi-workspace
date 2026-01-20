@@ -1,5 +1,11 @@
 # @hhmi/compliance
 
+## 0.1.2
+
+### Patch Changes
+
+- 159ea93: Added scopes for initial feature flagged deployment
+
 ## 0.1.1
 
 ### Patch Changes

@@ -3,7 +3,7 @@
   "changelog": "@changesets/cli/changelog",
   "commit": false,
   "fixed": [],
-  "linked": [],
+  "linked": [["@hhmi/pmc","@hhmi/compliance"]],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
