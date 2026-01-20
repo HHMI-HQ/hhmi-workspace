@@ -29,3 +29,7 @@ properties:
         type: string
         secret: true
         description: Airtable API key for accessing the HHMI compliance database
+  enhancedArticleRendering:
+    type: boolean
+    description: This flag will enable the enhanced article rendering functionality when true
+    default: false

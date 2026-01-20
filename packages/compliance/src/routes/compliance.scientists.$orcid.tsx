@@ -19,6 +19,7 @@ interface LoaderData {
   preprintsNotCovered: Promise<NormalizedArticleRecord[]>;
   error?: string;
   orcid: string;
+  enhancedArticleRendering: boolean;
 }
 
 export const meta = ({ loaderData }: { loaderData: LoaderData }) => {
@@ -28,7 +29,7 @@ export const meta = ({ loaderData }: { loaderData: LoaderData }) => {
 };
 
 export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | { error: string }> {
-  await withAppScopedContext(args, [hhmi.compliance.admin]);
+  const ctx = await withAppScopedContext(args, [hhmi.compliance.admin]);
 
   const orcid = args.params.orcid;
   if (!orcid) {
@@ -38,12 +39,16 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | { e
   const preprintsNotCoveredPromise = fetchEverythingNotCoveredByPolicy(orcid);
   const { scientist, error } = await fetchScientistByOrcid(orcid);
 
+  // Get enhancedArticleRendering flag from extension config
+  const enhancedArticleRendering = ctx.$config.app.extensions?.compliance?.enhancedArticleRendering ?? false;
+
   return {
     scientist,
     preprintsCovered: preprintsCoveredPromise,
     preprintsNotCovered: preprintsNotCoveredPromise,
     error,
     orcid,
+    enhancedArticleRendering,
   };
 }
 
@@ -63,7 +68,8 @@ export function shouldRevalidate(args?: { formAction?: string; [key: string]: an
 }
 
 export default function ScientistCompliancePage({ loaderData }: { loaderData: LoaderData }) {
-  const { scientist, preprintsCovered, preprintsNotCovered, orcid } = loaderData;
+  const { scientist, preprintsCovered, preprintsNotCovered, orcid } =
+    loaderData;
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
 
   const breadcrumbs = [

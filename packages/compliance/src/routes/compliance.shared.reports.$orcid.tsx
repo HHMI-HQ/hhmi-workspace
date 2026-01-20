@@ -17,6 +17,7 @@ interface LoaderData {
   preprintsNotCovered: Promise<NormalizedArticleRecord[]>;
   error?: string;
   orcid: string;
+  enhancedArticleRendering: boolean;
 }
 
 interface LoaderError {
@@ -97,12 +98,16 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | Loa
   const preprintsNotCoveredPromise = fetchEverythingNotCoveredByPolicy(orcid);
   const { scientist, error } = await fetchScientistByOrcid(orcid);
 
+  // Get enhancedArticleRendering flag from extension config
+  const enhancedArticleRendering = ctx.$config.app.extensions?.compliance?.enhancedArticleRendering ?? false;
+
   return {
     scientist,
     preprintsCovered: preprintsCoveredPromise,
     preprintsNotCovered: preprintsNotCoveredPromise,
     error,
     orcid,
+    enhancedArticleRendering,
   };
 }
 
@@ -151,7 +156,8 @@ export default function UserComplianceReportPage({
       </PageFrame>
     );
   }
-  const { scientist, preprintsCovered, preprintsNotCovered, orcid } = loaderData as LoaderData;
+  const { scientist, preprintsCovered, preprintsNotCovered, orcid } =
+    loaderData as LoaderData;
 
   // Determine title and breadcrumbs based on available data
   const title = scientist
