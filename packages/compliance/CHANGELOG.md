@@ -1,5 +1,12 @@
 # @hhmi/compliance
 
+## 0.1.1
+
+### Patch Changes
+
+- f512935: Enhanced article links and badges are now shown depending on a configuration setting
+- 6179c39: Fix normalization during preprint item loading to read from correct field for the related journal article publisher
+
 ## 0.1.0
 
 ### Minor Changes
