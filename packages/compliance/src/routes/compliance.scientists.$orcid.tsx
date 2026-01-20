@@ -40,7 +40,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | { e
   const { scientist, error } = await fetchScientistByOrcid(orcid);
 
   // Get enhancedArticleRendering flag from extension config
-  const enhancedArticleRendering = ctx.$config.app.extensions?.compliance?.enhancedArticleRendering ?? false;
+  const enhancedArticleRendering = ctx.$config.app.extensions?.['hhmi-compliance']?.enhancedArticleRendering ?? false;
 
   return {
     scientist,
