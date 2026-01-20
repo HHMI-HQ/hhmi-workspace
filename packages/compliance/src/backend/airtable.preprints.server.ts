@@ -88,7 +88,7 @@ export function normalizePreprintRecordToArticleRecord(
           url: cleanString(fields[PREPRINT_FIELDS.publication_url.id]),
           pmid: cleanString(fields[PREPRINT_FIELDS.publication_pmid.id]),
           pmcid: cleanString(fields[PREPRINT_FIELDS.publication_pmcid.id]),
-          publisher: cleanString(fields[PREPRINT_FIELDS.publisher.id]),
+          publisher: cleanString(fields[PREPRINT_FIELDS.publication_publisher.id]),
           license: cleanLicenseString(fields[PREPRINT_FIELDS.publication_license.id]),
           complianceIssueType: cleanString(fields[PREPRINT_FIELDS.publication_issue_type.id]),
           complianceIssueStatus: cleanString(fields[PREPRINT_FIELDS.publication_status.id]),
