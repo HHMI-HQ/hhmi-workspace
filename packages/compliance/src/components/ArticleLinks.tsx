@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '@curvenote/scms-core';
+import { useLoaderData } from 'react-router';
 import type { NormalizedArticleRecord } from '../backend/types.js';
 import { PMCLink, CurvenotePMCLink, CurvenotePreprintLink, PubMedLink } from './Badges.js';
 import type { ViewContext, ViewLocation } from './Badges.js';
@@ -30,6 +31,10 @@ export function ArticleLinks({
   viewContext: ViewContext;
   viewLocation: ViewLocation;
 }) {
+  // Get enhancedArticleRendering flag from loader data
+  const loaderData = useLoaderData() as { enhancedArticleRendering?: boolean };
+  const enhancedArticleRendering = loaderData?.enhancedArticleRendering ?? false;
+  
   // Build array of link elements
   const linkElements: React.ReactNode[] = [];
 
@@ -95,7 +100,7 @@ export function ArticleLinks({
     );
   }
 
-  if (item.preprint?.pmcid && isCCBY(item.preprint?.license)) {
+  if (enhancedArticleRendering && item.preprint?.pmcid && isCCBY(item.preprint?.license)) {
     linkElements.push(
       <CurvenotePMCLink
         key="curvenote-pmc-preprint-link"
@@ -111,7 +116,7 @@ export function ArticleLinks({
     );
   }
 
-  if (item.journal?.pmcid && isCCBY(item.journal?.license)) {
+  if (enhancedArticleRendering && item.journal?.pmcid && isCCBY(item.journal?.license)) {
     linkElements.push(
       <CurvenotePMCLink
         key="curvenote-pmc-journal-link"
@@ -126,7 +131,7 @@ export function ArticleLinks({
     );
   }
 
-  if (item.preprint?.doi && item.preprint?.doi.includes('10.1101/')) {
+  if (enhancedArticleRendering && item.preprint?.doi && item.preprint?.doi.includes('10.1101/')) {
     linkElements.push(
       <CurvenotePreprintLink
         key="curvenote-preprint-link"

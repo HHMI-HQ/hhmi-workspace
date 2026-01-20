@@ -47,6 +47,9 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | { e
   // Detect if user has linked ORCID but scientist is not found in database
   const isOrcidLinkedButNotFound = !scientist && !!orcid;
 
+  // Get enhancedArticleRendering flag from extension config
+  const enhancedArticleRendering = ctx.$config.app.extensions?.['hhmi-compliance']?.enhancedArticleRendering ?? false;
+
   return {
     orcid,
     scientist,
@@ -54,6 +57,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | { e
     preprintsCovered: preprintsCoveredPromise,
     preprintsNotCovered: preprintsNotCoveredPromise,
     isOrcidLinkedButNotFound,
+    enhancedArticleRendering,
   };
 }
 
@@ -64,6 +68,7 @@ interface LoaderData {
   preprintsCovered: Promise<NormalizedArticleRecord[]>;
   preprintsNotCovered: Promise<NormalizedArticleRecord[]>;
   isOrcidLinkedButNotFound: boolean;
+  enhancedArticleRendering: boolean;
 }
 
 export function shouldRevalidate(args?: { formAction?: string; [key: string]: any }) {
@@ -87,6 +92,7 @@ export default function ComplianceReportPage({ loaderData }: { loaderData: Loade
     error,
     orcid,
     isOrcidLinkedButNotFound,
+    enhancedArticleRendering,
   } = loaderData;
   const navigate = useNavigate();
 

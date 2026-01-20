@@ -1,3 +1,4 @@
+import { useLoaderData } from 'react-router';
 import type { NormalizedArticleRecord } from '../backend/types.js';
 import {
   JournalLinkBadge,
@@ -22,6 +23,10 @@ export function PublicationLinks({
   viewContext: ViewContext;
   viewLocation: ViewLocation;
 }) {
+  // Get enhancedArticleRendering flag from loader data
+  const loaderData = useLoaderData() as { enhancedArticleRendering?: boolean };
+  const enhancedArticleRendering = loaderData?.enhancedArticleRendering ?? false;
+  
   if (!pub) return null;
   return (
     <div className="flex flex-wrap gap-2 mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -87,7 +92,7 @@ export function PublicationLinks({
           viewLocation={viewLocation}
         />
       )}
-      {pub.preprint?.pmcid && isCCBY(pub.preprint?.license) && (
+      {enhancedArticleRendering && pub.preprint?.pmcid && isCCBY(pub.preprint?.license) && (
         <CurvenotePMCLinkBadge
           pmcid={pub.preprint.pmcid}
           publicationId={pub.id}
@@ -98,7 +103,7 @@ export function PublicationLinks({
           preprint
         />
       )}
-      {pub.journal?.pmcid && isCCBY(pub.journal?.license) && (
+      {enhancedArticleRendering && pub.journal?.pmcid && isCCBY(pub.journal?.license) && (
         <CurvenotePMCLinkBadge
           pmcid={pub.journal.pmcid}
           publicationId={pub.id}
@@ -108,7 +113,7 @@ export function PublicationLinks({
           viewLocation={viewLocation}
         />
       )}
-      {pub.preprint?.doi && pub.preprint.doi.includes('10.1101/') && (
+      {enhancedArticleRendering && pub.preprint?.doi && pub.preprint.doi.includes('10.1101/') && (
         <CurvenotePreprintLinkBadge
           preprintDoi={pub.preprint.doi}
           publicationId={pub.id}
