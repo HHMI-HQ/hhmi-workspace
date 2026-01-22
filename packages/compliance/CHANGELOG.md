@@ -1,5 +1,12 @@
 # @hhmi/compliance
 
+## 0.1.3
+
+### Patch Changes
+
+- c017b55: tuned page loading logic
+- c017b55: Add a webhook to enable airtable cache warming from a vercel cron
+
 ## 0.1.2
 
 ### Patch Changes
