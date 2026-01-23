@@ -68,9 +68,13 @@ export async function action(args: ActionFunctionArgs) {
   );
 }
 
+export const meta = () => {
+  return [{ title: 'Confirm your role - My Compliance' }];
+};
+
 export default function QualifyUserPage() {
   const breadcrumbs = [
-    { label: 'Compliance', href: '/app/compliance' },
+    { label: 'My Compliance', href: '/app/compliance' },
     { label: 'Confirm your role', isCurrentPage: true },
   ];
 

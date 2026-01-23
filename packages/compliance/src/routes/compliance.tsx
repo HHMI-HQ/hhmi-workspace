@@ -166,7 +166,7 @@ export default function ComplianceLayout({ loaderData }: { loaderData: LoaderDat
       {shouldShowSecondaryNav && (
         <SecondaryNav
           contents={menu}
-          title="Compliance"
+          title={userComplianceRole === 'lab-manager' ? "Dashboards" : "My Dashboard"}
           extensions={[extension]}
           branding={{
             badge: (

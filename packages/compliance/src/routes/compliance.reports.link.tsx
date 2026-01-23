@@ -33,6 +33,10 @@ function OrcidIcon({
   );
 }
 
+export const meta = () => {
+  return [{ title: 'Link Your ORCID Account - My Compliance' }];
+};
+
 export async function loader(args: LoaderFunctionArgs) {
   const ctx = await withAppContext(args);
   const orcidAccount = ctx.user.linkedAccounts.find(
@@ -106,13 +110,13 @@ export default function LinkAccountLayout() {
   };
 
   const breadcrumbs = [
-    { label: 'Compliance', href: '/app/compliance' },
+    { label: 'My Compliance', href: '/app/compliance' },
     { label: 'Link Your ORCID Account', isCurrentPage: true },
   ];
 
   return (
     <PageFrame
-      title="Access My Compliance Dashboard"
+      title="My Compliance Dashboard"
       className="mx-auto mb-6 max-w-screen-lg"
       description={<ComplianceInfoCards className="mt-4" />}
       breadcrumbs={breadcrumbs}

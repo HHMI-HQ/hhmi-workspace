@@ -149,7 +149,7 @@ export default function ComplianceAccessPage({ loaderData }: { loaderData: Loade
   const { accessGrants } = loaderData;
 
   const breadcrumbs = [
-    { label: 'Compliance', href: '/app/compliance' },
+    { label: 'My Compliance', href: '/app/compliance' },
     { label: 'Delegate Access', isCurrentPage: true },
   ];
 

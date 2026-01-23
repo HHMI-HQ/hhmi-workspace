@@ -98,7 +98,7 @@ export default function ComplianceReportPage({ loaderData }: { loaderData: Loade
 
   const breadcrumbs = [
     { label: 'My Compliance', href: '/app/compliance' },
-    { label: 'My Dashboard', isCurrentPage: true },
+    { label: 'My Compliance Dashboard', isCurrentPage: true },
   ];
 
   // Clear localStorage flag when scientist data becomes available
@@ -111,7 +111,7 @@ export default function ComplianceReportPage({ loaderData }: { loaderData: Loade
   // Otherwise, render the normal compliance report
   return (
     <PageFrame
-      title="Compliance Dashboard"
+      title="My Compliance Dashboard"
       className="mx-auto max-w-screen-lg"
       description={<ComplianceInfoCards className="mt-4" dashboard={!isOrcidLinkedButNotFound} />}
       breadcrumbs={breadcrumbs}

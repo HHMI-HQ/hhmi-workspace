@@ -73,7 +73,7 @@ export default function ScientistCompliancePage({ loaderData }: { loaderData: Lo
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
 
   const breadcrumbs = [
-    { label: 'Compliance', href: '/app/compliance' },
+    { label: 'My Compliance', href: '/app/compliance' },
     { label: 'Compliance Management', href: '/app/compliance/scientists' },
     { label: `${scientist?.fullName || orcid}'s compliance dashboard`, isCurrentPage: true },
   ];

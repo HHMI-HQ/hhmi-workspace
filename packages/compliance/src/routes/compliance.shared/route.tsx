@@ -9,15 +9,15 @@ import {
 } from '@curvenote/scms-server';
 import { z } from 'zod';
 import { zfd } from 'zod-form-data';
-import { getComplianceReportsSharedWith } from '../backend/access.server.js';
-import { ScientistListItem } from '../components/ScientistListItem.js';
-import { RequestDashboardForm } from '../components/RequestDashboardForm.js';
-import type { NormalizedScientist } from '../backend/types.js';
-import { fetchScientistByOrcid } from '../backend/airtable.scientists.server.js';
+import { getComplianceReportsSharedWith } from '../../backend/access.server.js';
+import { ScientistListItem } from '../../components/ScientistListItem.js';
+import { RequestDashboardForm } from '../../components/RequestDashboardForm.js';
+import type { NormalizedScientist } from '../../backend/types.js';
+import { fetchScientistByOrcid } from '../../backend/airtable.scientists.server.js';
 import {
   handleRequestDashboardShare,
   handleInviteNewUser,
-} from './compliance.shared/actionHelpers.server.js';
+} from './actionHelpers.server.js';
 
 interface LoaderData {
   scientists: NormalizedScientist[];
@@ -25,7 +25,7 @@ interface LoaderData {
 
 export const meta = () => {
   return [
-    { title: 'Delegated Access - Compliance Dashboard' },
+    { title: 'Dashboards - My Compliance' },
     { name: 'description', content: 'View compliance dashboards that I have access to' },
   ];
 };
@@ -153,8 +153,8 @@ export default function SharedComplianceReportsPage({ loaderData }: { loaderData
   const { scientists } = loaderData;
 
   const breadcrumbs = [
-    { label: 'Compliance', href: '/app/compliance' },
-    { label: 'Shared Dashboards', isCurrentPage: true },
+    { label: 'My Compliance', href: '/app/compliance' },
+    { label: 'Dashboards', isCurrentPage: true },
   ];
 
   return (

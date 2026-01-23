@@ -76,7 +76,7 @@ async function retryWithBackoff<T>(
 
 export const meta = () => {
   return [
-    { title: 'Compliance Dashboard' },
+    { title: 'Management - My Compliance' },
     { name: 'description', content: 'View compliance data for all scientists' },
   ];
 };
@@ -242,14 +242,14 @@ export default function CompliancePage({ loaderData }: { loaderData: LoaderData 
   const { scientists } = loaderData;
 
   const breadcrumbs = [
-    { label: 'Compliance', href: '/app/compliance' },
+    { label: 'My Compliance', href: '/app/compliance' },
     { label: 'Compliance Management', isCurrentPage: true },
   ];
 
   return (
     <MainWrapper>
       <PageFrame
-        title="Compliance Dashboard"
+        title="Compliance Management"
         description="View compliance data for any scientist in the compliance database"
         className="mx-auto max-w-screen-lg"
         breadcrumbs={breadcrumbs}

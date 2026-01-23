@@ -138,7 +138,7 @@ export default function UserComplianceReportPage({
         className="mx-auto max-w-screen-lg"
         breadcrumbs={[
           { label: 'My Compliance', href: '/app/compliance' },
-          { label: 'Shared With Me', href: '/app/compliance/shared' },
+          { label: 'Dashboards', href: '/app/compliance/shared' },
           { label: 'Error', isCurrentPage: true },
         ]}
       >
@@ -165,8 +165,8 @@ export default function UserComplianceReportPage({
     : `Compliance Dashboard for ${orcid}`;
 
   const breadcrumbs = [
-    { label: 'Compliance', href: '/app/compliance' },
-    { label: 'Shared Dashboards', href: '/app/compliance/shared' },
+    { label: 'My Compliance', href: '/app/compliance' },
+    { label: 'Dashboards', href: '/app/compliance/shared' },
     { label: scientist?.fullName || orcid, isCurrentPage: true },
   ];
 

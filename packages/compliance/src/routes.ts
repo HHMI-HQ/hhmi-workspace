@@ -14,7 +14,7 @@ const routes = [
     ),
     route('qualify', resolveRoutePath(import.meta.url, 'routes/compliance.qualify/route.tsx')),
     route('share', resolveRoutePath(import.meta.url, 'routes/compliance.share/route.tsx')),
-    route('shared', resolveRoutePath(import.meta.url, 'routes/compliance.shared.tsx')),
+    route('shared', resolveRoutePath(import.meta.url, 'routes/compliance.shared/route.tsx')),
     route(
       'shared/reports/:orcid',
       resolveRoutePath(import.meta.url, 'routes/compliance.shared.reports.$orcid.tsx'),
