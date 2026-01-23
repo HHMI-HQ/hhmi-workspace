@@ -1,9 +1,9 @@
-import type { LoaderFunctionArgs } from 'react-router';
-import { Outlet, redirect } from 'react-router';
-import { useState, useEffect } from 'react';
+import type { LoaderFunctionArgs, ShouldRevalidateFunctionArgs } from 'react-router';
+import { Outlet, redirect, useLoaderData } from 'react-router';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import type { ServerSideMenuContents } from '@curvenote/scms-core';
 import { MainWrapper, SecondaryNav } from '@curvenote/scms-core';
-import { withAppContext, userHasScopes, withAppScopedContext } from '@curvenote/scms-server';
+import { userHasScopes, withAppScopedContext } from '@curvenote/scms-server';
 import { buildComplianceMenu } from './menu.js';
 import myComplianceIcon from '../assets/my-compliance-lock.svg';
 import { getComplianceReportsSharedWith } from '../backend/access.server.js';
@@ -22,7 +22,7 @@ interface LoaderData {
   userComplianceRole?: 'scientist' | 'lab-manager';
   sharedReports: Promise<ComplianceReportSharedWith[]>;
 }
-  
+
 export async function loader(args: LoaderFunctionArgs): Promise<LoaderData> {
   // ✅ MINIMAL: Get context (required for user data)
   const ctx = await withAppScopedContext(args, [hhmi.compliance.feature.dashboard]);
@@ -72,7 +72,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData> {
   // ✅ STEP 2: Only execute if NOT redirecting (sub-routes)
   // Defer all expensive operations
   const sharedReportsPromise = getComplianceReportsSharedWith(ctx.user.id);
-  
+
   let currentUserExistsInAirtablePromise: Promise<boolean> | null = Promise.resolve(false);
   if (orcidAccount?.idAtProvider) {
     currentUserExistsInAirtablePromise = checkScientistExistsByOrcid(orcidAccount.idAtProvider);
@@ -99,7 +99,38 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData> {
   };
 }
 
-export default function ComplianceLayout({ loaderData }: { loaderData: LoaderData }) {
+/**
+ * Ensure loader re-runs on navigation to keep menu state fresh.
+ * This is critical for ensuring menu items like "Delegate Access" appear
+ * after state changes (e.g., ORCID linking, Airtable sync).
+ */
+export function shouldRevalidate({
+  defaultShouldRevalidate,
+  currentUrl,
+  nextUrl,
+}: ShouldRevalidateFunctionArgs) {
+  // Always revalidate on navigation between compliance routes to ensure menu is up-to-date
+  if (currentUrl && nextUrl) {
+    const currentPath = new URL(currentUrl).pathname;
+    const nextPath = new URL(nextUrl).pathname;
+
+    // Revalidate when navigating between compliance routes
+    if (
+      currentPath.startsWith('/app/compliance') &&
+      nextPath.startsWith('/app/compliance') &&
+      currentPath !== nextPath
+    ) {
+      return true;
+    }
+  }
+
+  // Use default behavior for other cases
+  return defaultShouldRevalidate;
+}
+
+export default function ComplianceLayout() {
+  // Use useLoaderData to get fresh data on each render/navigation
+  const loaderData = useLoaderData<LoaderData>();
   const {
     menu: initialMenu,
     shouldShowSecondaryNav,
@@ -109,64 +140,154 @@ export default function ComplianceLayout({ loaderData }: { loaderData: LoaderDat
     userComplianceRole,
     sharedReports,
   } = loaderData;
-  
+
+  // Track resolved values to detect when they change
   const [menu, setMenu] = useState(initialMenu);
-  const [, setIsResolvingAirtable] = useState(true);
+  const [isResolving, setIsResolving] = useState(true);
+
+  // Use refs to track the current promise values and prevent stale updates
+  const promiseRef = useRef<{
+    currentUserExistsInAirtable: Promise<boolean>;
+    sharedReports: Promise<ComplianceReportSharedWith[]>;
+    orcid?: string;
+    isComplianceAdmin: boolean;
+    userComplianceRole?: 'scientist' | 'lab-manager';
+  }>({
+    currentUserExistsInAirtable,
+    sharedReports,
+    orcid,
+    isComplianceAdmin,
+    userComplianceRole,
+  });
+
+  // Create a stable key from loader data to detect when it changes
+  const loaderDataKey = useMemo(
+    () => `${orcid || 'no-orcid'}-${isComplianceAdmin}-${userComplianceRole || 'no-role'}`,
+    [orcid, isComplianceAdmin, userComplianceRole],
+  );
+
+  // Track the last resolved key to avoid unnecessary resets
+  const lastResolvedKeyRef = useRef<string | null>(null);
+
+  // Update refs when loader data changes, but only reset menu if key actually changed
+  useEffect(() => {
+    const keyChanged = lastResolvedKeyRef.current !== loaderDataKey;
+    
+    promiseRef.current = {
+      currentUserExistsInAirtable,
+      sharedReports,
+      orcid,
+      isComplianceAdmin,
+      userComplianceRole,
+    };
+    
+    // Only reset menu and resolving state if the key changed
+    // This prevents flickering when promises are recreated but data is the same
+    // On first mount, lastResolvedKeyRef.current is null, so keyChanged will be true
+    if (keyChanged) {
+      setIsResolving(true);
+      setMenu(initialMenu);
+      lastResolvedKeyRef.current = null; // Reset resolved key tracker
+    }
+    // Note: We don't include initialMenu in deps to avoid resetting on every render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    currentUserExistsInAirtable,
+    sharedReports,
+    orcid,
+    isComplianceAdmin,
+    userComplianceRole,
+    loaderDataKey,
+  ]);
 
   useEffect(() => {
     let isMounted = true;
     const startTime = Date.now();
-    
+
+    // Capture current ref values to ensure we're using the latest promises
+    const currentPromises = promiseRef.current;
+
     // Resolve both promises in parallel
-    Promise.all([
-      currentUserExistsInAirtable,
-      sharedReports,
-    ])
+    Promise.all([currentPromises.currentUserExistsInAirtable, currentPromises.sharedReports])
       .then(async ([exists, reports]) => {
-        // Only update state if component is still mounted and effect hasn't been cleaned up
+        // Double-check: verify we're still using the same promises (not stale)
+        if (
+          currentPromises.currentUserExistsInAirtable !==
+            promiseRef.current.currentUserExistsInAirtable ||
+          currentPromises.sharedReports !== promiseRef.current.sharedReports
+        ) {
+          // Promises have changed, ignore this result
+          return;
+        }
+
+        // Only update state if component is still mounted
         if (!isMounted) return;
-        
+
         const elapsed = Date.now() - startTime;
-        
+
         // Rebuild menu with actual values
         const updatedMenu = buildComplianceMenu(
           '/app/compliance',
-          isComplianceAdmin,
-          !!orcid,
+          currentPromises.isComplianceAdmin,
+          !!currentPromises.orcid,
           exists,
-          userComplianceRole,
+          currentPromises.userComplianceRole,
           reports,
         );
-        
+
         setMenu(updatedMenu);
-        setIsResolvingAirtable(false);
-        
+        setIsResolving(false);
+        // Mark this key as resolved
+        lastResolvedKeyRef.current = loaderDataKey;
+
         // Log if it took a while (for debugging)
         if (elapsed > 1000) {
           console.log(`Menu data resolved in ${elapsed}ms`);
         }
       })
       .catch((error) => {
-        // Only update state if component is still mounted and effect hasn't been cleaned up
+        // Only update state if component is still mounted and promises haven't changed
         if (!isMounted) return;
-        
+
+        // Check if promises are still current
+        if (
+          currentPromises.currentUserExistsInAirtable !==
+            promiseRef.current.currentUserExistsInAirtable ||
+          currentPromises.sharedReports !== promiseRef.current.sharedReports
+        ) {
+          return;
+        }
+
         console.error('Failed to resolve menu data:', error);
-        setIsResolvingAirtable(false);
+        setIsResolving(false);
         // Keep default menu on error
       });
-    
+
     // Cleanup function: mark as unmounted to prevent stale state updates
     return () => {
       isMounted = false;
     };
-  }, [currentUserExistsInAirtable, sharedReports, isComplianceAdmin, orcid, userComplianceRole]);
+  }, [loaderDataKey]); // Use the stable key instead of promise references
+
+  // Create a stable key for SecondaryNav to force re-render when menu changes
+  const menuKey = useMemo(() => {
+    // Create a key based on menu structure to detect changes
+    return JSON.stringify(
+      menu.map((section) => ({
+        sectionName: section.sectionName,
+        menuCount: section.menus.length,
+        menuNames: section.menus.map((m) => m.name).join(','),
+      })),
+    );
+  }, [menu]);
 
   return (
     <>
       {shouldShowSecondaryNav && (
         <SecondaryNav
+          key={menuKey}
           contents={menu}
-          title={userComplianceRole === 'lab-manager' ? "Dashboards" : "My Dashboard"}
+          title={userComplianceRole === 'lab-manager' ? 'Dashboards' : 'My Dashboard'}
           extensions={[extension]}
           branding={{
             badge: (
