@@ -1,5 +1,11 @@
 # @hhmi/compliance
 
+## 0.1.4
+
+### Patch Changes
+
+- 6f5e1a1: Text changes based on acceptance testing
+
 ## 0.1.3
 
 ### Patch Changes
