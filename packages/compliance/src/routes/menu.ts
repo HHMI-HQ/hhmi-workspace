@@ -5,7 +5,6 @@ export function buildComplianceMenu(
   baseUrl: string,
   isComplianceAdmin: boolean,
   hasOrcid: boolean,
-  currentUserExistsInAirtable: boolean,
   role: 'scientist' | 'lab-manager' | undefined,
   sharedReports: ComplianceReportSharedWith[] = [],
 ): ServerSideMenuContents {
@@ -19,7 +18,7 @@ export function buildComplianceMenu(
       url: `${baseUrl}/reports/me`,
     });
 
-    if (hasOrcid && currentUserExistsInAirtable) {
+    if (hasOrcid && role === 'scientist') {
       userMenus.push({
         name: 'compliance.share',
         label: 'Delegate Access',
@@ -62,8 +61,5 @@ export function buildComplianceMenu(
     });
   }
 
-  return [
-    { menus: adminMenus },
-    { menus: userMenus },
-  ];
+  return [{ menus: adminMenus }, { menus: userMenus }];
 }
