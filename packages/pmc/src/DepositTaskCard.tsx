@@ -1,11 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useFetcher, useNavigate } from 'react-router';
-import {
-  primitives,
-  LoadingSpinner,
-  usePingEvent,
-  ResumeDraftWorkDialog,
-} from '@curvenote/scms-core';
+import { primitives, LoadingSpinner, usePingEvent, ui } from '@curvenote/scms-core';
 import pmcGraphic from './assets/pmc-task-graphic.svg';
 import type { DraftPMCDeposit } from './backend/db.server.js';
 import { PMCTrackEvent } from './analytics/events.js';
@@ -103,7 +98,7 @@ export function PMCDepositTaskCard() {
         )}
       </primitives.Card>
 
-      <ResumeDraftWorkDialog<DraftPMCDeposit>
+      <ui.ResumeDraftWorkDialog<DraftPMCDeposit>
         isOpen={showResumeDialog}
         onClose={() => setShowResumeDialog(false)}
         onCreateNew={createNewDeposit}
