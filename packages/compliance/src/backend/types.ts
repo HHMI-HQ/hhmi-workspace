@@ -95,8 +95,8 @@ export type ReportLoaderData = {
 };
 
 export type ComplianceUserMetadata = {
-  hideMyReport?: boolean;
   role?: 'scientist' | 'lab-manager';
+  dashboardRequested?: boolean;
 };
 
 export type ComplianceUserMetadataSection = {

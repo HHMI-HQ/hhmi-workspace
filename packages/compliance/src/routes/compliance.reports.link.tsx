@@ -1,9 +1,8 @@
-import { useLoaderData, useFetcher, redirect, data } from 'react-router';
-import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
+import { useLoaderData, useFetcher, redirect } from 'react-router';
+import type { LoaderFunctionArgs } from 'react-router';
 import { orcid, PageFrame, primitives, ui } from '@curvenote/scms-core';
 import { withAppContext, userHasScopes } from '@curvenote/scms-server';
 import { useState, useEffect } from 'react';
-import { handleMyHideReport } from '../backend/actionHelpers.server.js';
 import { hhmi } from '../backend/scopes.js';
 import { ComplianceInfoCards } from '../components/ComplianceInfoCards.js';
 
@@ -46,39 +45,11 @@ export async function loader(args: LoaderFunctionArgs) {
     throw redirect('/app/compliance/reports/me');
   }
 
-  // Check if user has opted to hide their compliance report
-  const userData = (ctx.user.data as any) || {};
-  const hideMyReport = userData.compliance?.hideMyReport === true;
-
-  if (hideMyReport) {
-    // If user has hidden their report, redirect to shared reports or compliance home
-    const { getComplianceReportsSharedWith } = await import('../backend/access.server.js');
-    const sharedReports = await getComplianceReportsSharedWith(ctx.user.id);
-    if (sharedReports.length > 0) {
-      throw redirect('/app/compliance/shared');
-    } else {
-      throw redirect('/app/compliance');
-    }
-  }
-
   const isComplianceAdmin = userHasScopes(ctx.user, [hhmi.compliance.admin]);
   return {
     hasOrcid: !!orcidAccount,
     isComplianceAdmin,
   };
-}
-
-export async function action(args: ActionFunctionArgs) {
-  const ctx = await withAppContext(args);
-
-  const formData = await args.request.formData();
-  const intent = formData.get('intent') as string;
-
-  if (intent === 'hide-report') {
-    return handleMyHideReport(ctx);
-  }
-
-  return data({ error: 'Invalid action' }, { status: 400 });
 }
 
 interface LoaderData {
@@ -88,7 +59,7 @@ interface LoaderData {
 
 export default function LinkAccountLayout() {
   useLoaderData<LoaderData>();
-  const fetcher = useFetcher<typeof action>();
+  const fetcher = useFetcher();
   const [laggySubmitting, setLaggySubmitting] = useState(false);
 
   useEffect(() => {

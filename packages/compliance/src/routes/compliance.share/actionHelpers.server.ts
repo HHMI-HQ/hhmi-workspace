@@ -56,22 +56,6 @@ export async function handleShareMyComplianceReport(ctx: SecureContext, recipien
     );
   }
 
-  // Security check: Verify user hasn't hidden their report
-  const userData = (ctx.user.data as any) || {};
-  const hideMyReport = userData.compliance?.hideMyReport === true;
-
-  if (hideMyReport) {
-    return dataResponse(
-      {
-        error: {
-          type: 'validation',
-          message: 'You cannot provide access to your dashboard because you have hidden it',
-        },
-      },
-      { status: 403 },
-    );
-  }
-
   // Security check: Prevent sharing with yourself
   if (recipientUserId === ctx.user.id) {
     return dataResponse(

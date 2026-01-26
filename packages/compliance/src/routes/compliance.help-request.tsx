@@ -10,6 +10,7 @@ import type { NormalizedArticleRecord } from '../backend/types.js';
 import { z } from 'zod';
 import { zfd } from 'zod-form-data';
 import { getEmailTemplates } from '../client.js';
+import { updateUserComplianceMetadata } from '../backend/actionHelpers.server.js';
 
 export async function loader() {
   // This route only handles POST requests
@@ -88,6 +89,9 @@ async function handleComplianceReportRequest(
       },
       getEmailTemplates(),
     );
+
+    // Set dashboardRequested flag in user's compliance metadata
+    await updateUserComplianceMetadata(ctx.user.id, { dashboardRequested: true });
 
     return data({ success: true });
   } catch (error) {

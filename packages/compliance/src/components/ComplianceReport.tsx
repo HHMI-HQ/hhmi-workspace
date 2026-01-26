@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BookCheckIcon, User, UserPlus } from 'lucide-react';
-import {
-  SectionWithHeading,
-  ui,
-  RequestHelpDialog,
-  clearOrcidRequestSent,
-  usePingEvent,
-} from '@curvenote/scms-core';
+import { SectionWithHeading, ui, RequestHelpDialog, usePingEvent } from '@curvenote/scms-core';
 import { ScientistCard } from './ScientistCard.js';
 import { ScientistCardSkeleton } from './ScientistCardSkeleton.js';
 import { NonCoveredPublicationsSection } from './NonCoveredPublicationSection.js';
@@ -24,7 +18,10 @@ import type { ViewContext } from './Badges.js';
  */
 export interface ComplianceReportProps {
   orcid: string;
-  scientist: NormalizedScientist | undefined | Promise<{ scientist: NormalizedScientist | undefined; error?: string }>;
+  scientist:
+    | NormalizedScientist
+    | undefined
+    | Promise<{ scientist: NormalizedScientist | undefined; error?: string }>;
   error?: string;
 
   // New preprints-based data (used in compliance.reports.me)
@@ -57,9 +54,7 @@ export function ComplianceReport({
     scientistProp instanceof Promise ? undefined : scientistProp,
   );
   const [error, setError] = useState<string | undefined>(errorProp);
-  const [isLoadingScientist, setIsLoadingScientist] = useState(
-    scientistProp instanceof Promise,
-  );
+  const [isLoadingScientist, setIsLoadingScientist] = useState(scientistProp instanceof Promise);
 
   useEffect(() => {
     if (scientistProp instanceof Promise) {
@@ -77,13 +72,6 @@ export function ComplianceReport({
         });
     }
   }, [scientistProp]);
-
-  // Clear localStorage flag when scientist data becomes available
-  useEffect(() => {
-    if (scientist && orcid) {
-      clearOrcidRequestSent(orcid);
-    }
-  }, [scientist, orcid]);
 
   const handleShareClick = () => {
     pingEvent(
@@ -160,7 +148,10 @@ export function ComplianceReport({
           <ScientistCardSkeleton />
         ) : (
           <>
-            <ScientistCard scientist={scientist} emptyMessage={`No data found for ORCID: ${orcid}`} />
+            <ScientistCard
+              scientist={scientist}
+              emptyMessage={`No data found for ORCID: ${orcid}`}
+            />
             <div className="flex justify-end items-center w-full row">
               <ui.Button variant="link" className="text-xs" onClick={handleHelpClick}>
                 Something not right? Request help.
@@ -178,34 +169,36 @@ export function ComplianceReport({
         successMessage="Your request has been sent to the HHMI Open Science Team. We'll get back to you as soon as possible."
         intent="general-help"
       />
-      <SectionWithHeading heading="Publications" icon={BookCheckIcon}>
-        <ui.Tabs defaultValue="covered" className="w-full">
-          <ui.TabsList>
-            <ui.TabsTrigger value="covered">Under HHMI Policy</ui.TabsTrigger>
-            <ui.TabsTrigger value="not-covered">Not under HHMI Policy</ui.TabsTrigger>
-          </ui.TabsList>
-          <ui.TabsContent value="covered">
-            <CoveredPublicationSection
-              publications={articlesCovered}
-              emptyMessage={emptyMessageCovered}
-              ItemComponent={CoveredArticleItem}
-              orcid={orcid}
-              scientist={scientist}
-              viewContext={viewContext}
-            />
-          </ui.TabsContent>
-          <ui.TabsContent value="not-covered">
-            <NonCoveredPublicationsSection
-              publications={articlesNotCovered}
-              emptyMessage={emptyMessageNotCovered}
-              ItemComponent={NotCoveredArticleItem}
-              orcid={orcid}
-              scientist={scientist}
-              viewContext={viewContext}
-            />
-          </ui.TabsContent>
-        </ui.Tabs>
-      </SectionWithHeading>
+      {!isLoadingScientist && (
+        <SectionWithHeading heading="Publications" icon={BookCheckIcon}>
+          <ui.Tabs defaultValue="covered" className="w-full">
+            <ui.TabsList>
+              <ui.TabsTrigger value="covered">Under HHMI Policy</ui.TabsTrigger>
+              <ui.TabsTrigger value="not-covered">Not under HHMI Policy</ui.TabsTrigger>
+            </ui.TabsList>
+            <ui.TabsContent value="covered">
+              <CoveredPublicationSection
+                publications={articlesCovered}
+                emptyMessage={emptyMessageCovered}
+                ItemComponent={CoveredArticleItem}
+                orcid={orcid}
+                scientist={scientist}
+                viewContext={viewContext}
+              />
+            </ui.TabsContent>
+            <ui.TabsContent value="not-covered">
+              <NonCoveredPublicationsSection
+                publications={articlesNotCovered}
+                emptyMessage={emptyMessageNotCovered}
+                ItemComponent={NotCoveredArticleItem}
+                orcid={orcid}
+                scientist={scientist}
+                viewContext={viewContext}
+              />
+            </ui.TabsContent>
+          </ui.Tabs>
+        </SectionWithHeading>
+      )}
     </div>
   );
 }

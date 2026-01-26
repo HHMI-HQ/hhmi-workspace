@@ -11,7 +11,11 @@ import {
 } from '../backend/airtable.server.js';
 import { ComplianceInfoCards } from '../components/ComplianceInfoCards.js';
 import { ComplianceDashboardRequest } from '../components/ComplianceDashboardRequest.js';
-import type { NormalizedArticleRecord, NormalizedScientist } from '../backend/types.js';
+import type {
+  NormalizedArticleRecord,
+  NormalizedScientist,
+  ComplianceUserMetadataSection,
+} from '../backend/types.js';
 
 export const meta = () => {
   // Meta function runs on server, so we can't await promises here
@@ -36,6 +40,10 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | { e
     return { error: 'ORCID is missing' };
   }
 
+  // Get user's compliance metadata
+  const userData = (ctx.user.data as ComplianceUserMetadataSection) || { compliance: {} };
+  const dashboardRequested = userData.compliance?.dashboardRequested ?? false;
+
   const preprintsCoveredPromise = fetchEverythingCoveredByPolicy(orcid);
   const preprintsNotCoveredPromise = fetchEverythingNotCoveredByPolicy(orcid);
   const scientistPromise = fetchScientistByOrcid(orcid);
@@ -50,6 +58,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | { e
     preprintsCovered: preprintsCoveredPromise,
     preprintsNotCovered: preprintsNotCoveredPromise,
     enhancedArticleRendering,
+    dashboardRequested,
   };
 }
 
@@ -59,6 +68,7 @@ interface LoaderData {
   preprintsCovered: Promise<NormalizedArticleRecord[]>;
   preprintsNotCovered: Promise<NormalizedArticleRecord[]>;
   enhancedArticleRendering: boolean;
+  dashboardRequested: boolean;
 }
 
 export function shouldRevalidate(args?: { formAction?: string; [key: string]: any }) {
@@ -75,7 +85,13 @@ export function shouldRevalidate(args?: { formAction?: string; [key: string]: an
 }
 
 export default function ComplianceReportPage({ loaderData }: { loaderData: LoaderData }) {
-  const { scientist: scientistPromise, preprintsCovered, preprintsNotCovered, orcid } = loaderData;
+  const {
+    scientist: scientistPromise,
+    preprintsCovered,
+    preprintsNotCovered,
+    orcid,
+    dashboardRequested,
+  } = loaderData;
   const navigate = useNavigate();
 
   // Resolve scientist promise to check if scientist is not found
@@ -106,7 +122,10 @@ export default function ComplianceReportPage({ loaderData }: { loaderData: Loade
         description={<ComplianceInfoCards className="mt-4" dashboard={false} />}
         breadcrumbs={breadcrumbs}
       >
-        <ComplianceDashboardRequest orcid={orcid ?? 'Unknown ORCID'} />
+        <ComplianceDashboardRequest
+          orcid={orcid ?? 'Unknown ORCID'}
+          dashboardRequested={dashboardRequested}
+        />
       </PageFrame>
     );
   }
