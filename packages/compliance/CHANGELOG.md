@@ -1,5 +1,11 @@
 # @hhmi/compliance
 
+## 0.1.5
+
+### Patch Changes
+
+- d60d007: Moved to using skeletonee to improve intial navigation on compliance dashboard
+
 ## 0.1.4
 
 ### Patch Changes
