@@ -1,24 +1,22 @@
 import type { LoaderFunctionArgs } from 'react-router';
 import { redirect, useNavigate } from 'react-router';
+import { useState, useEffect } from 'react';
 import { fetchScientistByOrcid } from '../backend/airtable.scientists.server.js';
 import { withAppContext } from '@curvenote/scms-server';
-import { PageFrame, clearOrcidRequestSent } from '@curvenote/scms-core';
+import { PageFrame } from '@curvenote/scms-core';
 import { ComplianceReport } from '../components/ComplianceReport.js';
 import {
   fetchEverythingCoveredByPolicy,
   fetchEverythingNotCoveredByPolicy,
 } from '../backend/airtable.server.js';
-import { ComplianceDashboardRequest } from '../components/ComplianceDashboardRequest.js';
 import { ComplianceInfoCards } from '../components/ComplianceInfoCards.js';
-import { useEffect } from 'react';
+import { ComplianceDashboardRequest } from '../components/ComplianceDashboardRequest.js';
 import type { NormalizedArticleRecord, NormalizedScientist } from '../backend/types.js';
 
-export const meta = ({ loaderData }: { loaderData: LoaderData }) => {
-  const scientist = loaderData?.scientist;
-  const title = scientist
-    ? `${scientist.fullName} - Compliance Dashboard`
-    : 'My Compliance Dashboard';
-  return [{ title }];
+export const meta = () => {
+  // Meta function runs on server, so we can't await promises here
+  // Use default title since scientist is now a promise
+  return [{ title: 'My Compliance Dashboard' }];
 };
 
 export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | { error: string }> {
@@ -27,8 +25,6 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | { e
   const orcidAccount = ctx.user.linkedAccounts.find(
     (account) => account.provider === 'orcid' && !account.pending,
   );
-
-  const userData = (ctx.user.data as any) || {};
 
   // If no ORCID or pending ORCID, redirect to link page
   if (!orcidAccount) {
@@ -42,32 +38,26 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | { e
 
   const preprintsCoveredPromise = fetchEverythingCoveredByPolicy(orcid);
   const preprintsNotCoveredPromise = fetchEverythingNotCoveredByPolicy(orcid);
-  const { scientist, error } = await fetchScientistByOrcid(orcid);
-
-  // Detect if user has linked ORCID but scientist is not found in database
-  const isOrcidLinkedButNotFound = !scientist && !!orcid;
+  const scientistPromise = fetchScientistByOrcid(orcid);
 
   // Get enhancedArticleRendering flag from extension config
-  const enhancedArticleRendering = ctx.$config.app.extensions?.['hhmi-compliance']?.enhancedArticleRendering ?? false;
+  const enhancedArticleRendering =
+    ctx.$config.app.extensions?.['hhmi-compliance']?.enhancedArticleRendering ?? false;
 
   return {
     orcid,
-    scientist,
-    error,
+    scientist: scientistPromise,
     preprintsCovered: preprintsCoveredPromise,
     preprintsNotCovered: preprintsNotCoveredPromise,
-    isOrcidLinkedButNotFound,
     enhancedArticleRendering,
   };
 }
 
 interface LoaderData {
   orcid: string;
-  scientist: NormalizedScientist | undefined;
-  error?: string;
+  scientist: Promise<{ scientist: NormalizedScientist | undefined; error?: string }>;
   preprintsCovered: Promise<NormalizedArticleRecord[]>;
   preprintsNotCovered: Promise<NormalizedArticleRecord[]>;
-  isOrcidLinkedButNotFound: boolean;
   enhancedArticleRendering: boolean;
 }
 
@@ -85,55 +75,62 @@ export function shouldRevalidate(args?: { formAction?: string; [key: string]: an
 }
 
 export default function ComplianceReportPage({ loaderData }: { loaderData: LoaderData }) {
-  const {
-    scientist,
-    preprintsCovered,
-    preprintsNotCovered,
-    error,
-    orcid,
-    isOrcidLinkedButNotFound,
-    enhancedArticleRendering,
-  } = loaderData;
+  const { scientist: scientistPromise, preprintsCovered, preprintsNotCovered, orcid } = loaderData;
   const navigate = useNavigate();
+
+  // Resolve scientist promise to check if scientist is not found
+  const [isOrcidLinkedButNotFound, setIsOrcidLinkedButNotFound] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    scientistPromise
+      .then((result) => {
+        setIsOrcidLinkedButNotFound(!result.scientist && !!orcid);
+      })
+      .catch((err) => {
+        console.error('Failed to load scientist data:', err);
+        setIsOrcidLinkedButNotFound(true);
+      });
+  }, [scientistPromise, orcid]);
 
   const breadcrumbs = [
     { label: 'My Compliance', href: '/app/compliance' },
     { label: 'My Compliance Dashboard', isCurrentPage: true },
   ];
 
-  // Clear localStorage flag when scientist data becomes available
-  useEffect(() => {
-    if (scientist && orcid) {
-      clearOrcidRequestSent(orcid);
-    }
-  }, [scientist, orcid]);
+  // Show not found state if scientist is not found (after promise resolves)
+  if (isOrcidLinkedButNotFound === true) {
+    return (
+      <PageFrame
+        title="My Compliance Dashboard"
+        className="mx-auto max-w-screen-lg"
+        description={<ComplianceInfoCards className="mt-4" dashboard={false} />}
+        breadcrumbs={breadcrumbs}
+      >
+        <ComplianceDashboardRequest orcid={orcid ?? 'Unknown ORCID'} />
+      </PageFrame>
+    );
+  }
 
-  // Otherwise, render the normal compliance report
   return (
     <PageFrame
       title="My Compliance Dashboard"
       className="mx-auto max-w-screen-lg"
-      description={<ComplianceInfoCards className="mt-4" dashboard={!isOrcidLinkedButNotFound} />}
+      description={<ComplianceInfoCards className="mt-4" dashboard={true} />}
       breadcrumbs={breadcrumbs}
     >
-      {isOrcidLinkedButNotFound ? (
-        <ComplianceDashboardRequest orcid={orcid ?? 'Unknown ORCID'} />
-      ) : (
-        <ComplianceReport
-          orcid={orcid ?? 'Unknown ORCID'}
-          scientist={scientist}
-          articlesCovered={preprintsCovered}
-          articlesNotCovered={preprintsNotCovered}
-          error={error}
-          onShareClick={() => {
-            navigate('/app/compliance/share');
-          }}
-          shareButtonText="Give Someone Access"
-          viewContext="own"
-          emptyMessageCovered="No articles covered by policy found. Only publications since the later of your HHMI hire date or January 1, 2022 are displayed."
-          emptyMessageNotCovered="No articles found."
-        />
-      )}
+      <ComplianceReport
+        orcid={orcid ?? 'Unknown ORCID'}
+        scientist={scientistPromise}
+        articlesCovered={preprintsCovered}
+        articlesNotCovered={preprintsNotCovered}
+        onShareClick={() => {
+          navigate('/app/compliance/share');
+        }}
+        shareButtonText="Give Someone Access"
+        viewContext="own"
+        emptyMessageCovered="No articles covered by policy found. Only publications since the later of your HHMI hire date or January 1, 2022 are displayed."
+        emptyMessageNotCovered="No articles found."
+      />
     </PageFrame>
   );
 }

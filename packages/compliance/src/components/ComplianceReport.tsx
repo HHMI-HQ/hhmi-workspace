@@ -8,6 +8,7 @@ import {
   usePingEvent,
 } from '@curvenote/scms-core';
 import { ScientistCard } from './ScientistCard.js';
+import { ScientistCardSkeleton } from './ScientistCardSkeleton.js';
 import { NonCoveredPublicationsSection } from './NonCoveredPublicationSection.js';
 import type { NormalizedScientist, NormalizedArticleRecord } from '../backend/types.js';
 import { CoveredArticleItem } from './CoveredArticleItem.js';
@@ -23,7 +24,7 @@ import type { ViewContext } from './Badges.js';
  */
 export interface ComplianceReportProps {
   orcid: string;
-  scientist: NormalizedScientist | undefined;
+  scientist: NormalizedScientist | undefined | Promise<{ scientist: NormalizedScientist | undefined; error?: string }>;
   error?: string;
 
   // New preprints-based data (used in compliance.reports.me)
@@ -37,10 +38,10 @@ export interface ComplianceReportProps {
 }
 
 export function ComplianceReport({
-  scientist,
+  scientist: scientistProp,
   articlesCovered,
   articlesNotCovered,
-  error,
+  error: errorProp,
   orcid,
   onShareClick,
   shareButtonText = 'Give Access to Someone',
@@ -50,6 +51,32 @@ export function ComplianceReport({
 }: ComplianceReportProps) {
   const [showHelpDialog, setShowHelpDialog] = useState(false);
   const pingEvent = usePingEvent();
+
+  // Resolve scientist promise if it's a promise, otherwise use the value directly
+  const [scientist, setScientist] = useState<NormalizedScientist | undefined>(
+    scientistProp instanceof Promise ? undefined : scientistProp,
+  );
+  const [error, setError] = useState<string | undefined>(errorProp);
+  const [isLoadingScientist, setIsLoadingScientist] = useState(
+    scientistProp instanceof Promise,
+  );
+
+  useEffect(() => {
+    if (scientistProp instanceof Promise) {
+      setIsLoadingScientist(true);
+      scientistProp
+        .then((result) => {
+          setScientist(result.scientist);
+          setError(result.error);
+          setIsLoadingScientist(false);
+        })
+        .catch((err) => {
+          console.error('Failed to load scientist data:', err);
+          setError('Failed to load scientist data');
+          setIsLoadingScientist(false);
+        });
+    }
+  }, [scientistProp]);
 
   // Clear localStorage flag when scientist data becomes available
   useEffect(() => {
@@ -129,12 +156,18 @@ export function ComplianceReport({
         }
         icon={User}
       >
-        <ScientistCard scientist={scientist} emptyMessage={`No data found for ORCID: ${orcid}`} />
-        <div className="flex justify-end items-center w-full row">
-          <ui.Button variant="link" className="text-xs" onClick={handleHelpClick}>
-            Something not right? Request help.
-          </ui.Button>
-        </div>
+        {isLoadingScientist ? (
+          <ScientistCardSkeleton />
+        ) : (
+          <>
+            <ScientistCard scientist={scientist} emptyMessage={`No data found for ORCID: ${orcid}`} />
+            <div className="flex justify-end items-center w-full row">
+              <ui.Button variant="link" className="text-xs" onClick={handleHelpClick}>
+                Something not right? Request help.
+              </ui.Button>
+            </div>
+          </>
+        )}
       </SectionWithHeading>
       <RequestHelpDialog
         orcid={orcid}
