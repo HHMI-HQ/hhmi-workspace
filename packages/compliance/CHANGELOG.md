@@ -1,5 +1,11 @@
 # @hhmi/compliance
 
+## 0.1.6
+
+### Patch Changes
+
+- b601f5d: No longer storing request-report flag in local storage
+
 ## 0.1.5
 
 ### Patch Changes
