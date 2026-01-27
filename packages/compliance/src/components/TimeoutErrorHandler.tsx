@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { ui } from '@curvenote/scms-core';
+import { useCompliancePingEvent } from '../utils/analytics.js';
+import { HHMITrackEvent } from '../analytics/events.js';
 
 interface TimeoutErrorHandlerProps {
   promise: Promise<any>;
@@ -20,6 +22,7 @@ export function TimeoutErrorHandler({ promise, onError, children }: TimeoutError
   const [error, setError] = useState<Error | null>(null);
   const [isRetrying, setIsRetrying] = useState(false);
   const navigate = useNavigate();
+  const pingEvent = useCompliancePingEvent();
 
   useEffect(() => {
     let isMounted = true;
@@ -42,6 +45,16 @@ export function TimeoutErrorHandler({ promise, onError, children }: TimeoutError
         if (isTimeoutError) {
           setError(err);
           onError?.(err);
+
+          // Track timeout event for analytics
+          pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_SERVER_TIMEOUT, {
+            errorMessage: err.message,
+            errorName: err.name,
+            route: window.location.pathname,
+          }).catch((analyticsError) => {
+            // Don't let analytics errors break the error handling
+            console.error('Failed to track timeout event:', analyticsError);
+          });
         } else {
           // Re-throw non-timeout errors so they can be handled elsewhere
           throw err;
@@ -51,13 +64,22 @@ export function TimeoutErrorHandler({ promise, onError, children }: TimeoutError
     return () => {
       isMounted = false;
     };
-  }, [promise, onError]);
+  }, [promise, onError, pingEvent]);
 
   const retry = useCallback(() => {
     setIsRetrying(true);
+
+    // Track retry event for analytics
+    pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_TIMEOUT_RETRY, {
+      route: window.location.pathname,
+    }).catch((analyticsError) => {
+      // Don't let analytics errors break the retry
+      console.error('Failed to track retry event:', analyticsError);
+    });
+
     // Reload the page to retry the request
     window.location.reload();
-  }, []);
+  }, [pingEvent]);
 
   return <>{children({ error, isRetrying, retry })}</>;
 }

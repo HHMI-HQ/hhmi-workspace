@@ -42,6 +42,10 @@ export enum HHMITrackEvent {
   COMPLIANCE_WIZARD_CONFIRM_USEFUL = 'PMC Compliance Wizard Confirmed Useful',
   COMPLIANCE_WIZARD_CONFIRM_NEED_HELP = 'PMC Compliance Wizard Confirmed Need Help',
   COMPLIANCE_WIZARD_HELP_REQUEST_SUBMITTED = 'PMC Compliance Wizard Help Request Submitted',
+
+  // Timeout events
+  HHMI_COMPLIANCE_SERVER_TIMEOUT = 'HHMI Compliance Server Timeout',
+  HHMI_COMPLIANCE_TIMEOUT_RETRY = 'HHMI Compliance Timeout Retry',
 }
 
 export const HHMITrackEventDescriptions: Record<HHMITrackEvent, string> = {
@@ -104,4 +108,9 @@ export const HHMITrackEventDescriptions: Record<HHMITrackEvent, string> = {
     'After completing the wizard, user confirmed they stil needed help',
   [HHMITrackEvent.COMPLIANCE_WIZARD_HELP_REQUEST_SUBMITTED]:
     'User submitted a help request form after indicating they needed help',
+
+  [HHMITrackEvent.HHMI_COMPLIANCE_SERVER_TIMEOUT]:
+    'Server timeout occurred while loading compliance data (Airtable query took too long)',
+  [HHMITrackEvent.HHMI_COMPLIANCE_TIMEOUT_RETRY]:
+    'User clicked retry button after experiencing a server timeout',
 };
