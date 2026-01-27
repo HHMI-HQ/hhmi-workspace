@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import { Check, Mail, UserPlus } from 'lucide-react';
-import { ui, usePingEvent, cn, plural } from '@curvenote/scms-core';
+import { ui, cn, plural } from '@curvenote/scms-core';
+import { useCompliancePingEvent } from '../utils/analytics.js';
 import type { NormalizedScientist } from '../backend/types.js';
 import { CheckBadgeIcon } from '@heroicons/react/24/outline';
 import { OrcidIcon } from '@scienceicons/react/24/solid';
@@ -31,16 +32,12 @@ function ScientistInfo({ scientist, baseUrl, pingEvent }: ScientistInfoProps) {
           if (!scientist.orcid) {
             e.preventDefault();
           } else {
-            pingEvent(
-              HHMITrackEvent.HHMI_COMPLIANCE_SCIENTIST_SELECTED,
-              {
-                scientistId: scientist.id,
-                scientistName: scientist.fullName,
-                scientistOrcid: scientist.orcid,
-                totalPublications: scientist.publications.total + scientist.preprints.total,
-              },
-              { anonymous: true },
-            );
+            pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_SCIENTIST_SELECTED, {
+              scientistId: scientist.id,
+              scientistName: scientist.fullName,
+              scientistOrcid: scientist.orcid,
+              totalPublications: scientist.publications.total + scientist.preprints.total,
+            });
           }
         }}
       >
@@ -86,16 +83,12 @@ function ScientistActions({
             if (!scientist.orcid) {
               e.preventDefault();
             } else {
-              pingEvent(
-                HHMITrackEvent.HHMI_COMPLIANCE_SCIENTIST_SELECTED,
-                {
-                  scientistId: scientist.id,
-                  scientistName: scientist.fullName,
-                  scientistOrcid: scientist.orcid,
-                  totalPublications: scientist.publications.total + scientist.preprints.total,
-                },
-                { anonymous: true },
-              );
+              pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_SCIENTIST_SELECTED, {
+                scientistId: scientist.id,
+                scientistName: scientist.fullName,
+                scientistOrcid: scientist.orcid,
+                totalPublications: scientist.publications.total + scientist.preprints.total,
+              });
             }
           }}
         >
@@ -188,7 +181,7 @@ export function ScientistListItem({
   showShareButton?: boolean;
 }) {
   const { preprints, publications } = scientist;
-  const pingEvent = usePingEvent();
+  const pingEvent = useCompliancePingEvent();
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
 
   return (

@@ -4,6 +4,7 @@ import { getPrismaClient } from '@curvenote/scms-server';
 import { HHMITrackEvent } from '../../analytics/events.js';
 import { getEmailTemplates } from '../../client.js';
 import { handleInviteNewUser } from '../compliance.share/actionHelpers.server.js';
+import { addComplianceRoleToPayload } from '../../utils/analytics.server.js';
 
 /**
  * Handler for requesting a user to share their compliance dashboard
@@ -94,14 +95,17 @@ export async function handleRequestDashboardShare(ctx: SecureContext, recipientU
     );
 
     // Track analytics event
-    await ctx.trackEvent(HHMITrackEvent.HHMI_COMPLIANCE_DASHBOARD_REQUESTED, {
-      requesterUserId: ctx.user.id,
-      requesterEmail: ctx.user.email,
-      requesterDisplayName: ctx.user.display_name || ctx.user.username,
-      recipientUserId: recipient.id,
-      recipientEmail: recipient.email,
-      recipientDisplayName: recipient.display_name || recipient.username,
-    });
+    await ctx.trackEvent(
+      HHMITrackEvent.HHMI_COMPLIANCE_DASHBOARD_REQUESTED,
+      addComplianceRoleToPayload(ctx, {
+        requesterUserId: ctx.user.id,
+        requesterEmail: ctx.user.email,
+        requesterDisplayName: ctx.user.display_name || ctx.user.username,
+        recipientUserId: recipient.id,
+        recipientEmail: recipient.email,
+        recipientDisplayName: recipient.display_name || recipient.username,
+      }),
+    );
 
     return { success: true };
   } catch (error) {

@@ -8,6 +8,7 @@ import {
 import { fetchScientistByOrcid } from '../../backend/airtable.scientists.server.js';
 import { HHMITrackEvent } from '../../analytics/events.js';
 import { getEmailTemplates } from '../../client.js';
+import { addComplianceRoleToPayload } from '../../utils/analytics.server.js';
 
 /**
  * Get access grants for a scientist's compliance report by ORCID
@@ -45,11 +46,14 @@ export async function getScientistAccessGrants(ctx: SecureContext, orcid: string
   // Get access grants for this scientist's report
   const accessGrants = await getComplianceAccessGrantedBy(orcidOwner.id);
 
-  await ctx.trackEvent(HHMITrackEvent.HHMI_COMPLIANCE_ACCESS_GRANTS_VIEWED, {
-    scientistOrcid: orcid,
-    scientistUserId: orcidOwner.id,
-    accessGrantCount: accessGrants.length,
-  });
+  await ctx.trackEvent(
+    HHMITrackEvent.HHMI_COMPLIANCE_ACCESS_GRANTS_VIEWED,
+    addComplianceRoleToPayload(ctx, {
+      scientistOrcid: orcid,
+      scientistUserId: orcidOwner.id,
+      accessGrantCount: accessGrants.length,
+    }),
+  );
 
   // Get scientist name from Airtable if available
   const { scientist } = await fetchScientistByOrcid(orcid);
@@ -190,15 +194,18 @@ export async function handleAdminShareComplianceReport(
     // Share the report - owner is the scientist, granted by admin
     await createAccessWithComplianceReadScope(orcidOwner.id, recipient.id);
 
-    await ctx.trackEvent(HHMITrackEvent.HHMI_COMPLIANCE_REPORT_SHARED, {
-      admin: true,
-      scientistOrcid: orcid,
-      scientistUserId: orcidOwner.id,
-      recipientUserId: recipient.id,
-      recipientEmail: recipient.email,
-      recipientDisplayName: recipient.display_name || recipient.username,
-      adminUserId: ctx.user.id,
-    });
+    await ctx.trackEvent(
+      HHMITrackEvent.HHMI_COMPLIANCE_REPORT_SHARED,
+      addComplianceRoleToPayload(ctx, {
+        admin: true,
+        scientistOrcid: orcid,
+        scientistUserId: orcidOwner.id,
+        recipientUserId: recipient.id,
+        recipientEmail: recipient.email,
+        recipientDisplayName: recipient.display_name || recipient.username,
+        adminUserId: ctx.user.id,
+      }),
+    );
 
     // Send email notification from admin on behalf of scientist
     if (recipient.email) {
@@ -300,15 +307,18 @@ export async function handleAdminRevokeComplianceAccess(ctx: SecureContext, acce
     // Pass admin user ID for activity tracking
     await revokeAccess(accessId, ctx.user.id);
 
-    await ctx.trackEvent(HHMITrackEvent.HHMI_COMPLIANCE_REPORT_ACCESS_REVOKED, {
-      admin: true,
-      accessId,
-      receiverUserId: access.receiver_id,
-      receiverEmail: receiver?.email,
-      receiverDisplayName: receiver?.display_name || receiver?.username,
-      ownerUserId: access.owner_id,
-      adminUserId: ctx.user.id,
-    });
+    await ctx.trackEvent(
+      HHMITrackEvent.HHMI_COMPLIANCE_REPORT_ACCESS_REVOKED,
+      addComplianceRoleToPayload(ctx, {
+        admin: true,
+        accessId,
+        receiverUserId: access.receiver_id,
+        receiverEmail: receiver?.email,
+        receiverDisplayName: receiver?.display_name || receiver?.username,
+        ownerUserId: access.owner_id,
+        adminUserId: ctx.user.id,
+      }),
+    );
 
     return { success: true };
   } catch (error) {

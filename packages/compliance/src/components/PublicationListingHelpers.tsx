@@ -1,4 +1,5 @@
-import { ui, usePingEvent } from '@curvenote/scms-core';
+import { ui } from '@curvenote/scms-core';
+import { useCompliancePingEvent } from '../utils/analytics.js';
 import type { NormalizedArticleRecord } from '../backend/types.js';
 import { HHMITrackEvent } from '../analytics/events.js';
 import { useCallback } from 'react';
@@ -381,22 +382,18 @@ export function HHMIPublicationFilterBar({
   setActiveFilters,
   filters,
 }: HHMIPublicationFilterBarProps) {
-  const pingEvent = usePingEvent();
+  const pingEvent = useCompliancePingEvent();
 
   const handleFilterChange = useCallback(
     (newFilters: Record<string, any>) => {
       setActiveFilters(newFilters);
       const activeFilterCount = Object.values(newFilters).filter(Boolean).length;
       if (activeFilterCount > 0) {
-        pingEvent(
-          HHMITrackEvent.HHMI_COMPLIANCE_FILTER_APPLIED,
-          {
-            activeFilters: newFilters,
-            filterCount: activeFilterCount,
-            filterType: 'publications',
-          },
-          { anonymous: true },
-        );
+        pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_FILTER_APPLIED, {
+          activeFilters: newFilters,
+          filterCount: activeFilterCount,
+          filterType: 'publications',
+        });
       }
     },
     [setActiveFilters, pingEvent],

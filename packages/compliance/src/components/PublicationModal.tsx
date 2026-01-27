@@ -1,7 +1,8 @@
 import { X, ExternalLink, Check } from 'lucide-react';
 import type { NormalizedArticleRecord, NormalizedScientist } from '../backend/types.js';
 import { buildUrl } from 'doi-utils';
-import { cn, formatDate, usePingEvent, ui } from '@curvenote/scms-core';
+import { cn, formatDate, ui } from '@curvenote/scms-core';
+import { useCompliancePingEvent } from '../utils/analytics.js';
 import { HHMITrackEvent } from '../analytics/events.js';
 import { PublicationLinks } from './PublicationCard.js';
 import { RequestHelpDialog, type HelpRequestPublication } from '@curvenote/scms-core';
@@ -22,17 +23,13 @@ const POLICY_URLS = {
 };
 
 function PolicyLink({ policy }: { policy?: string }) {
-  const pingEvent = usePingEvent();
+  const pingEvent = useCompliancePingEvent();
 
   const handlePolicyClick = () => {
-    pingEvent(
-      HHMITrackEvent.HHMI_COMPLIANCE_POLICY_OPENED,
-      {
-        policyType: policy,
-        policyUrl: POLICY_URLS[policy as keyof typeof POLICY_URLS],
-      },
-      { anonymous: true },
-    );
+    pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_POLICY_OPENED, {
+      policyType: policy,
+      policyUrl: POLICY_URLS[policy as keyof typeof POLICY_URLS],
+    });
   };
 
   if (!policy) return null;
@@ -226,87 +223,67 @@ export function PublicationModal({
   scientist,
   viewContext,
 }: PublicationModalProps) {
-  const pingEvent = usePingEvent();
+  const pingEvent = useCompliancePingEvent();
   const [showHelpDialog, setShowHelpDialog] = useState(false);
 
   if (!pub) return null;
 
   const handlePreprintDOIClick = () => {
-    pingEvent(
-      HHMITrackEvent.HHMI_COMPLIANCE_DOI_LINK_CLICKED,
-      {
-        publicationId: pub.id,
-        publicationTitle: pub.title,
-        doi: pub.preprint?.doi,
-        doiType: 'preprint',
-        linkUrl: buildUrl(pub.preprint?.doi ?? ''),
-        orcid: scientist.orcid,
-        viewContext,
-        viewLocation: 'modal',
-      },
-      { anonymous: true },
-    );
+    pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_DOI_LINK_CLICKED, {
+      publicationId: pub.id,
+      publicationTitle: pub.title,
+      doi: pub.preprint?.doi,
+      doiType: 'preprint',
+      linkUrl: buildUrl(pub.preprint?.doi ?? ''),
+      orcid: scientist.orcid,
+      viewContext,
+      viewLocation: 'modal',
+    });
   };
 
   const handleJournalDOIClick = () => {
-    pingEvent(
-      HHMITrackEvent.HHMI_COMPLIANCE_DOI_LINK_CLICKED,
-      {
-        publicationId: pub.id,
-        publicationTitle: pub.title,
-        doi: pub.journal?.doi,
-        doiType: 'journal',
-        linkUrl: buildUrl(pub.journal?.doi ?? ''),
-        orcid: scientist.orcid,
-        viewContext,
-        viewLocation: 'modal',
-      },
-      { anonymous: true },
-    );
+    pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_DOI_LINK_CLICKED, {
+      publicationId: pub.id,
+      publicationTitle: pub.title,
+      doi: pub.journal?.doi,
+      doiType: 'journal',
+      linkUrl: buildUrl(pub.journal?.doi ?? ''),
+      orcid: scientist.orcid,
+      viewContext,
+      viewLocation: 'modal',
+    });
   };
 
   const handleJournalURLClick = () => {
-    pingEvent(
-      HHMITrackEvent.HHMI_COMPLIANCE_URL_LINK_CLICKED,
-      {
-        publicationId: pub.id,
-        publicationTitle: pub.title,
-        urlType: 'journal',
-        linkUrl: pub.journal?.url,
-        orcid: scientist.orcid,
-        viewContext,
-        viewLocation: 'modal',
-      },
-      { anonymous: true },
-    );
+    pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_URL_LINK_CLICKED, {
+      publicationId: pub.id,
+      publicationTitle: pub.title,
+      urlType: 'journal',
+      linkUrl: pub.journal?.url,
+      orcid: scientist.orcid,
+      viewContext,
+      viewLocation: 'modal',
+    });
   };
 
   const handlePreprintURLClick = () => {
-    pingEvent(
-      HHMITrackEvent.HHMI_COMPLIANCE_URL_LINK_CLICKED,
-      {
-        publicationId: pub.id,
-        publicationTitle: pub.title,
-        urlType: 'preprint',
-        linkUrl: pub.preprint?.url,
-        orcid: scientist.orcid,
-        viewContext,
-        viewLocation: 'modal',
-      },
-      { anonymous: true },
-    );
+    pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_URL_LINK_CLICKED, {
+      publicationId: pub.id,
+      publicationTitle: pub.title,
+      urlType: 'preprint',
+      linkUrl: pub.preprint?.url,
+      orcid: scientist.orcid,
+      viewContext,
+      viewLocation: 'modal',
+    });
   };
 
   const trackModalClose = (closeMethod: string) => {
-    pingEvent(
-      HHMITrackEvent.HHMI_COMPLIANCE_PUBLICATION_MODAL_CLOSED,
-      {
-        publicationId: pub.id,
-        publicationTitle: pub.title,
-        closeMethod,
-      },
-      { anonymous: true },
-    );
+    pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_PUBLICATION_MODAL_CLOSED, {
+      publicationId: pub.id,
+      publicationTitle: pub.title,
+      closeMethod,
+    });
   };
 
   const handleCloseButtonClick = () => {
@@ -323,16 +300,12 @@ export function PublicationModal({
 
   const handleHelpDialogClose = (open: boolean) => {
     if (!open) {
-      pingEvent(
-        HHMITrackEvent.HHMI_COMPLIANCE_HELP_MODAL_CLOSED,
-        {
-          publicationId: pub.id,
-          publicationTitle: pub.title,
-          context: 'publication-modal',
-          closeMethod: 'click-outside-or-escape',
-        },
-        { anonymous: true },
-      );
+      pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_HELP_MODAL_CLOSED, {
+        publicationId: pub.id,
+        publicationTitle: pub.title,
+        context: 'publication-modal',
+        closeMethod: 'click-outside-or-escape',
+      });
     }
     setShowHelpDialog(open);
   };
@@ -393,20 +366,16 @@ export function PublicationModal({
                             className="underline"
                             onClick={() => {
                               if (!pub.journal?.pmid) return;
-                              pingEvent(
-                                HHMITrackEvent.HHMI_COMPLIANCE_PUBMED_LINK_CLICKED,
-                                {
-                                  publicationId: pub.id,
-                                  publicationTitle: pub.title,
-                                  linkType: 'PubMed',
-                                  pmid: pub.journal.pmid,
-                                  linkUrl: `https://pubmed.ncbi.nlm.nih.gov/${pub.journal.pmid}/`,
-                                  orcid: scientist.orcid,
-                                  viewContext,
-                                  viewLocation: 'modal',
-                                },
-                                { anonymous: true },
-                              );
+                              pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_PUBMED_LINK_CLICKED, {
+                                publicationId: pub.id,
+                                publicationTitle: pub.title,
+                                linkType: 'PubMed',
+                                pmid: pub.journal.pmid,
+                                linkUrl: `https://pubmed.ncbi.nlm.nih.gov/${pub.journal.pmid}/`,
+                                orcid: scientist.orcid,
+                                viewContext,
+                                viewLocation: 'modal',
+                              });
                             }}
                           >
                             {pub.journal.pmid}
@@ -429,20 +398,16 @@ export function PublicationModal({
                             className="underline"
                             onClick={() => {
                               if (!pub.journal?.pmcid) return;
-                              pingEvent(
-                                HHMITrackEvent.HHMI_COMPLIANCE_PMC_LINK_CLICKED,
-                                {
-                                  publicationId: pub.id,
-                                  publicationTitle: pub.title,
-                                  linkType: 'PMC',
-                                  pmcid: pub.journal.pmcid,
-                                  linkUrl: `https://www.ncbi.nlm.nih.gov/pmc/articles/${pub.journal.pmcid}/`,
-                                  orcid: scientist.orcid,
-                                  viewContext,
-                                  viewLocation: 'modal',
-                                },
-                                { anonymous: true },
-                              );
+                              pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_PMC_LINK_CLICKED, {
+                                publicationId: pub.id,
+                                publicationTitle: pub.title,
+                                linkType: 'PMC',
+                                pmcid: pub.journal.pmcid,
+                                linkUrl: `https://www.ncbi.nlm.nih.gov/pmc/articles/${pub.journal.pmcid}/`,
+                                orcid: scientist.orcid,
+                                viewContext,
+                                viewLocation: 'modal',
+                              });
                             }}
                           >
                             {pub.journal.pmcid}
@@ -523,20 +488,16 @@ export function PublicationModal({
                             className="underline"
                             onClick={() => {
                               if (!pub.preprint?.pmid) return;
-                              pingEvent(
-                                HHMITrackEvent.HHMI_COMPLIANCE_PUBMED_LINK_CLICKED,
-                                {
-                                  publicationId: pub.id,
-                                  publicationTitle: pub.title,
-                                  linkType: 'PubMed',
-                                  pmid: pub.preprint.pmid,
-                                  linkUrl: `https://pubmed.ncbi.nlm.nih.gov/${pub.preprint.pmid}/`,
-                                  orcid: scientist.orcid,
-                                  viewContext,
-                                  viewLocation: 'modal',
-                                },
-                                { anonymous: true },
-                              );
+                              pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_PUBMED_LINK_CLICKED, {
+                                publicationId: pub.id,
+                                publicationTitle: pub.title,
+                                linkType: 'PubMed',
+                                pmid: pub.preprint.pmid,
+                                linkUrl: `https://pubmed.ncbi.nlm.nih.gov/${pub.preprint.pmid}/`,
+                                orcid: scientist.orcid,
+                                viewContext,
+                                viewLocation: 'modal',
+                              });
                             }}
                           >
                             {pub.preprint.pmid}
@@ -559,20 +520,16 @@ export function PublicationModal({
                             className="underline"
                             onClick={() => {
                               if (!pub.preprint?.pmcid) return;
-                              pingEvent(
-                                HHMITrackEvent.HHMI_COMPLIANCE_PMC_LINK_CLICKED,
-                                {
-                                  publicationId: pub.id,
-                                  publicationTitle: pub.title,
-                                  linkType: 'PMC',
-                                  pmcid: pub.preprint.pmcid,
-                                  linkUrl: `https://www.ncbi.nlm.nih.gov/pmc/articles/${pub.preprint.pmcid}/`,
-                                  orcid: scientist.orcid,
-                                  viewContext,
-                                  viewLocation: 'modal',
-                                },
-                                { anonymous: true },
-                              );
+                              pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_PMC_LINK_CLICKED, {
+                                publicationId: pub.id,
+                                publicationTitle: pub.title,
+                                linkType: 'PMC',
+                                pmcid: pub.preprint.pmcid,
+                                linkUrl: `https://www.ncbi.nlm.nih.gov/pmc/articles/${pub.preprint.pmcid}/`,
+                                orcid: scientist.orcid,
+                                viewContext,
+                                viewLocation: 'modal',
+                              });
                             }}
                           >
                             {pub.preprint.pmcid}
@@ -637,15 +594,11 @@ export function PublicationModal({
             </ui.Button>
             <ui.Button
               onClick={() => {
-                pingEvent(
-                  HHMITrackEvent.HHMI_COMPLIANCE_HELP_REQUESTED,
-                  {
-                    publicationId: pub.id,
-                    publicationTitle: pub.title,
-                    context: 'publication-modal',
-                  },
-                  { anonymous: true },
-                );
+                pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_HELP_REQUESTED, {
+                  publicationId: pub.id,
+                  publicationTitle: pub.title,
+                  context: 'publication-modal',
+                });
                 setShowHelpDialog(true);
               }}
             >

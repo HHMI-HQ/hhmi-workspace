@@ -12,9 +12,11 @@ import { ComplianceWizard } from '../components/ComplianceWizard.js';
 import type { ComplianceWizardConfig, ComplianceWizardState } from '../common/complianceTypes.js';
 import { complianceWizardConfig } from '../common/compliance-wizard.config.js';
 import { composeHelpRequestEmailBody } from '../email/compose-help-request-email.js';
+import type { ComplianceUserMetadataSection } from '../backend/types.js';
 
 interface LoaderData {
   config: ComplianceWizardConfig;
+  complianceRole?: 'scientist' | 'lab-manager';
 }
 
 export const meta: MetaFunction<LoaderData> = ({ matches }) => {
@@ -32,8 +34,10 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | Res
 
   // Use the imported TypeScript config
   const config = complianceWizardConfig;
+  const userData = (ctx.user.data as ComplianceUserMetadataSection) || { compliance: {} };
+  const complianceRole = userData.compliance?.role;
 
-  return { config };
+  return { config, complianceRole };
 }
 
 export const action = async (args: ActionFunctionArgs) => {

@@ -8,6 +8,7 @@ import { getPrismaClient } from '@curvenote/scms-server';
 import { HHMITrackEvent } from '../../analytics/events.js';
 import type { Config } from '@/types/app-config.js';
 import { getEmailTemplates } from '../../client.js';
+import { addComplianceRoleToPayload } from '../../utils/analytics.server.js';
 
 /**
  * A very specific handler that should be invoked by a user to share their
@@ -115,13 +116,16 @@ export async function handleShareMyComplianceReport(ctx: SecureContext, recipien
     // Share the report - explicitly use ctx.user.id to ensure we're sharing the current user's report
     await createAccessWithComplianceReadScope(ctx.user.id, recipient.id);
 
-    await ctx.trackEvent(HHMITrackEvent.HHMI_COMPLIANCE_REPORT_SHARED, {
-      admin: false,
-      recipientUserId: recipient.id,
-      recipientEmail: recipient.email,
-      recipientDisplayName: recipient.display_name || recipient.username,
-      scientistOrcid: orcidAccount?.idAtProvider,
-    });
+    await ctx.trackEvent(
+      HHMITrackEvent.HHMI_COMPLIANCE_REPORT_SHARED,
+      addComplianceRoleToPayload(ctx, {
+        admin: false,
+        recipientUserId: recipient.id,
+        recipientEmail: recipient.email,
+        recipientDisplayName: recipient.display_name || recipient.username,
+        scientistOrcid: orcidAccount?.idAtProvider,
+      }),
+    );
 
     // Send email notification
     if (recipient.email) {
@@ -245,14 +249,17 @@ export async function handleInviteNewUser(
     );
 
     // Track the invitation
-    await ctx.trackEvent(HHMITrackEvent.HHMI_COMPLIANCE_REPORT_SHARED, {
-      admin: false,
-      action: 'workspace-invitation',
-      recipientEmail: trimmedEmail,
-      inviterUserId: ctx.user.id,
-      inviterEmail: ctx.user.email,
-      orcid: orcid || undefined,
-    });
+    await ctx.trackEvent(
+      HHMITrackEvent.HHMI_COMPLIANCE_REPORT_SHARED,
+      addComplianceRoleToPayload(ctx, {
+        admin: false,
+        action: 'workspace-invitation',
+        recipientEmail: trimmedEmail,
+        inviterUserId: ctx.user.id,
+        inviterEmail: ctx.user.email,
+        orcid: orcid || undefined,
+      }),
+    );
 
     return { success: true };
   } catch (error) {

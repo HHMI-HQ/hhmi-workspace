@@ -43,6 +43,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | { e
   // Get user's compliance metadata
   const userData = (ctx.user.data as ComplianceUserMetadataSection) || { compliance: {} };
   const dashboardRequested = userData.compliance?.dashboardRequested ?? false;
+  const complianceRole = userData.compliance?.role;
 
   const preprintsCoveredPromise = fetchEverythingCoveredByPolicy(orcid);
   const preprintsNotCoveredPromise = fetchEverythingNotCoveredByPolicy(orcid);
@@ -59,6 +60,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | { e
     preprintsNotCovered: preprintsNotCoveredPromise,
     enhancedArticleRendering,
     dashboardRequested,
+    complianceRole,
   };
 }
 
@@ -69,6 +71,7 @@ interface LoaderData {
   preprintsNotCovered: Promise<NormalizedArticleRecord[]>;
   enhancedArticleRendering: boolean;
   dashboardRequested: boolean;
+  complianceRole?: 'scientist' | 'lab-manager';
 }
 
 export function shouldRevalidate(args?: { formAction?: string; [key: string]: any }) {

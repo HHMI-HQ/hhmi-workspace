@@ -18,6 +18,7 @@ interface LoaderData {
   orcid?: string;
   isComplianceAdmin: boolean;
   userComplianceRole?: 'scientist' | 'lab-manager';
+  complianceRole?: 'scientist' | 'lab-manager'; // For analytics - same as userComplianceRole
   sharedReports: Promise<ComplianceReportSharedWith[]>;
 }
 
@@ -86,6 +87,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData> {
     orcid: orcidAccount?.idAtProvider ?? undefined,
     isComplianceAdmin,
     userComplianceRole,
+    complianceRole: userComplianceRole, // For analytics
     sharedReports: sharedReportsPromise,
   };
 }

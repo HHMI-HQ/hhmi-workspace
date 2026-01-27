@@ -5,6 +5,7 @@ import { withAppContext, userHasScopes } from '@curvenote/scms-server';
 import { useState, useEffect } from 'react';
 import { hhmi } from '../backend/scopes.js';
 import { ComplianceInfoCards } from '../components/ComplianceInfoCards.js';
+import type { ComplianceUserMetadataSection } from '../backend/types.js';
 
 /**
  * ORCID Icon Component - Green square with white "iD" text, or inverted (white background with green text)
@@ -46,15 +47,19 @@ export async function loader(args: LoaderFunctionArgs) {
   }
 
   const isComplianceAdmin = userHasScopes(ctx.user, [hhmi.compliance.admin]);
+  const userData = (ctx.user.data as ComplianceUserMetadataSection) || { compliance: {} };
+  const complianceRole = userData.compliance?.role;
   return {
     hasOrcid: !!orcidAccount,
     isComplianceAdmin,
+    complianceRole,
   };
 }
 
 interface LoaderData {
   hasOrcid: boolean;
   isComplianceAdmin: boolean;
+  complianceRole?: 'scientist' | 'lab-manager';
 }
 
 export default function LinkAccountLayout() {

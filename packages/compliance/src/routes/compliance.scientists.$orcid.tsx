@@ -10,8 +10,11 @@ import {
 import { ShareReportDialog } from '../components/ShareReportDialog.js';
 import { useState } from 'react';
 import type { LoaderFunctionArgs } from 'react-router';
-import type { NormalizedArticleRecord, NormalizedScientist } from '../backend/types.js';
-import { ComplianceInfoCards } from '../components/ComplianceInfoCards.js';
+import type {
+  NormalizedArticleRecord,
+  NormalizedScientist,
+  ComplianceUserMetadataSection,
+} from '../backend/types.js';
 
 interface LoaderData {
   scientist: NormalizedScientist | undefined;
@@ -20,6 +23,7 @@ interface LoaderData {
   error?: string;
   orcid: string;
   enhancedArticleRendering: boolean;
+  complianceRole?: 'scientist' | 'lab-manager';
 }
 
 export const meta = ({ loaderData }: { loaderData: LoaderData }) => {
@@ -40,7 +44,10 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | { e
   const { scientist, error } = await fetchScientistByOrcid(orcid);
 
   // Get enhancedArticleRendering flag from extension config
-  const enhancedArticleRendering = ctx.$config.app.extensions?.['hhmi-compliance']?.enhancedArticleRendering ?? false;
+  const enhancedArticleRendering =
+    ctx.$config.app.extensions?.['hhmi-compliance']?.enhancedArticleRendering ?? false;
+  const userData = (ctx.user.data as ComplianceUserMetadataSection) || { compliance: {} };
+  const complianceRole = userData.compliance?.role;
 
   return {
     scientist,
@@ -49,6 +56,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | { e
     error,
     orcid,
     enhancedArticleRendering,
+    complianceRole,
   };
 }
 
@@ -68,8 +76,7 @@ export function shouldRevalidate(args?: { formAction?: string; [key: string]: an
 }
 
 export default function ScientistCompliancePage({ loaderData }: { loaderData: LoaderData }) {
-  const { scientist, preprintsCovered, preprintsNotCovered, orcid } =
-    loaderData;
+  const { scientist, preprintsCovered, preprintsNotCovered, orcid } = loaderData;
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
 
   const breadcrumbs = [

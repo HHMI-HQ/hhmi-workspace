@@ -13,9 +13,12 @@ import { AccessGrantItem } from '../../components/AccessGrantItem.js';
 import { hhmi } from '../../backend/scopes.js';
 import type { AccessGrants } from '@curvenote/scms-server';
 import { HHMITrackEvent } from '../../analytics/events.js';
+import { addComplianceRoleToPayload } from '../../utils/analytics.server.js';
+import type { ComplianceUserMetadataSection } from '../../backend/types.js';
 
 interface LoaderData {
   accessGrants: Awaited<ReturnType<typeof getComplianceAccessGrantedBy>>;
+  complianceRole?: 'scientist' | 'lab-manager';
 }
 
 export const meta = () => {
@@ -28,7 +31,9 @@ export const meta = () => {
 export async function loader(args: LoaderFunctionArgs): Promise<LoaderData> {
   const ctx = await withAppContext(args);
   const accessGrants = await getComplianceAccessGrantedBy(ctx.user.id);
-  return { accessGrants };
+  const userData = (ctx.user.data as ComplianceUserMetadataSection) || { compliance: {} };
+  const complianceRole = userData.compliance?.role;
+  return { accessGrants, complianceRole };
 }
 
 export async function action(args: ActionFunctionArgs) {
@@ -109,13 +114,16 @@ export async function action(args: ActionFunctionArgs) {
 
         await revokeComplianceAccess(accessId);
 
-        await ctx.trackEvent(HHMITrackEvent.HHMI_COMPLIANCE_REPORT_ACCESS_REVOKED, {
-          admin: false,
-          accessId,
-          receiverUserId: access.receiver_id,
-          receiverEmail: receiver?.email,
-          receiverDisplayName: receiver?.display_name || receiver?.username,
-        });
+        await ctx.trackEvent(
+          HHMITrackEvent.HHMI_COMPLIANCE_REPORT_ACCESS_REVOKED,
+          addComplianceRoleToPayload(ctx, {
+            admin: false,
+            accessId,
+            receiverUserId: access.receiver_id,
+            receiverEmail: receiver?.email,
+            receiverDisplayName: receiver?.display_name || receiver?.username,
+          }),
+        );
 
         return { success: true };
       } catch (error) {

@@ -8,7 +8,11 @@ import {
   fetchEverythingNotCoveredByPolicy,
 } from '../backend/airtable.server.js';
 import type { LoaderFunctionArgs } from 'react-router';
-import type { NormalizedArticleRecord, NormalizedScientist } from '../backend/types.js';
+import type {
+  NormalizedArticleRecord,
+  NormalizedScientist,
+  ComplianceUserMetadataSection,
+} from '../backend/types.js';
 import { ComplianceInfoCards } from '../components/ComplianceInfoCards.js';
 
 interface LoaderData {
@@ -18,6 +22,7 @@ interface LoaderData {
   error?: string;
   orcid: string;
   enhancedArticleRendering: boolean;
+  complianceRole?: 'scientist' | 'lab-manager';
 }
 
 interface LoaderError {
@@ -99,7 +104,10 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | Loa
   const { scientist, error } = await fetchScientistByOrcid(orcid);
 
   // Get enhancedArticleRendering flag from extension config
-  const enhancedArticleRendering = ctx.$config.app.extensions?.['hhmi-compliance']?.enhancedArticleRendering ?? false;
+  const enhancedArticleRendering =
+    ctx.$config.app.extensions?.['hhmi-compliance']?.enhancedArticleRendering ?? false;
+  const userData = (ctx.user.data as ComplianceUserMetadataSection) || { compliance: {} };
+  const complianceRole = userData.compliance?.role;
 
   return {
     scientist,
@@ -108,6 +116,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | Loa
     error,
     orcid,
     enhancedArticleRendering,
+    complianceRole,
   };
 }
 
@@ -156,8 +165,7 @@ export default function UserComplianceReportPage({
       </PageFrame>
     );
   }
-  const { scientist, preprintsCovered, preprintsNotCovered, orcid } =
-    loaderData as LoaderData;
+  const { scientist, preprintsCovered, preprintsNotCovered, orcid } = loaderData as LoaderData;
 
   // Determine title and breadcrumbs based on available data
   const title = scientist

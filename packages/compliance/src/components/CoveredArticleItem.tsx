@@ -5,7 +5,8 @@ import { useState } from 'react';
 import { PublicationModal } from './PublicationModal.js';
 import { ArticleLinks } from './ArticleLinks.js';
 import { ExternalLink } from 'lucide-react';
-import { ui, formatDate, usePingEvent } from '@curvenote/scms-core';
+import { ui, formatDate } from '@curvenote/scms-core';
+import { useCompliancePingEvent } from '../utils/analytics.js';
 import { summarizeAuthorList } from './ListingHelpers.js';
 import { IssueStatusWithTooltip } from './IssueStatusWithTooltip.js';
 import { HHMITrackEvent } from '../analytics/events.js';
@@ -21,17 +22,13 @@ export function CoveredArticleItem({
   viewContext: ViewContext;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const pingEvent = usePingEvent();
+  const pingEvent = useCompliancePingEvent();
 
   const handleModalOpen = () => {
-    pingEvent(
-      HHMITrackEvent.HHMI_COMPLIANCE_PUBLICATION_MODAL_OPENED,
-      {
-        publicationId: item.id,
-        publicationTitle: item.title,
-      },
-      { anonymous: true },
-    );
+    pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_PUBLICATION_MODAL_OPENED, {
+      publicationId: item.id,
+      publicationTitle: item.title,
+    });
     setIsModalOpen(true);
   };
 
@@ -111,19 +108,15 @@ export function CoveredArticleItem({
                     rel="noopener noreferrer"
                     className="inline-flex gap-1 items-center text-center"
                     onClick={() =>
-                      pingEvent(
-                        HHMITrackEvent.HHMI_COMPLIANCE_URL_LINK_CLICKED,
-                        {
-                          publicationId: item.id,
-                          publicationTitle: item.title,
-                          urlType: 'preprint',
-                          linkUrl: item.preprint?.url ?? '',
-                          orcid: scientist.orcid,
-                          viewContext,
-                          viewLocation: 'list',
-                        },
-                        { anonymous: true },
-                      )
+                      pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_URL_LINK_CLICKED, {
+                        publicationId: item.id,
+                        publicationTitle: item.title,
+                        urlType: 'preprint',
+                        linkUrl: item.preprint?.url ?? '',
+                        orcid: scientist.orcid,
+                        viewContext,
+                        viewLocation: 'list',
+                      })
                     }
                   >
                     Preprint <ExternalLink className="inline-block w-3 h-3" />
@@ -166,19 +159,15 @@ export function CoveredArticleItem({
                     rel="noopener noreferrer"
                     className="inline-flex gap-1 items-center text-center"
                     onClick={() =>
-                      pingEvent(
-                        HHMITrackEvent.HHMI_COMPLIANCE_URL_LINK_CLICKED,
-                        {
-                          publicationId: item.id,
-                          publicationTitle: item.title,
-                          urlType: 'journal',
-                          linkUrl: item.journal?.url ?? '',
-                          orcid: scientist.orcid,
-                          viewContext,
-                          viewLocation: 'list',
-                        },
-                        { anonymous: true },
-                      )
+                      pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_URL_LINK_CLICKED, {
+                        publicationId: item.id,
+                        publicationTitle: item.title,
+                        urlType: 'journal',
+                        linkUrl: item.journal?.url ?? '',
+                        orcid: scientist.orcid,
+                        viewContext,
+                        viewLocation: 'list',
+                      })
                     }
                   >
                     Journal Article <ExternalLink className="inline-block w-3 h-3" />

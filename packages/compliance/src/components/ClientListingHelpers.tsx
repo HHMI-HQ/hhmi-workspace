@@ -1,5 +1,6 @@
 import type { NormalizedScientist } from '../backend/types.js';
-import { ui, usePingEvent } from '@curvenote/scms-core';
+import { ui } from '@curvenote/scms-core';
+import { useCompliancePingEvent } from '../utils/analytics.js';
 import { HHMITrackEvent } from '../analytics/events.js';
 import { useCallback } from 'react';
 
@@ -183,21 +184,17 @@ export function HHMIClientFilterBar({
   setActiveFilters,
   filterDefinitions = HHMI_FILTERS,
 }: HHMIClientFilterBarProps) {
-  const pingEvent = usePingEvent();
+  const pingEvent = useCompliancePingEvent();
 
   const handleFilterChange = useCallback(
     (filters: Record<string, any>) => {
       setActiveFilters(filters);
       const activeFilterCount = Object.values(filters).filter(Boolean).length;
       if (activeFilterCount > 0) {
-        pingEvent(
-          HHMITrackEvent.HHMI_COMPLIANCE_FILTER_APPLIED,
-          {
-            activeFilters: filters,
-            filterCount: activeFilterCount,
-          },
-          { anonymous: true },
-        );
+        pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_FILTER_APPLIED, {
+          activeFilters: filters,
+          filterCount: activeFilterCount,
+        });
       }
     },
     [setActiveFilters, pingEvent],

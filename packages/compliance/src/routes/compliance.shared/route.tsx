@@ -2,25 +2,19 @@ import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
 import { data, redirect } from 'react-router';
 import { Library } from 'lucide-react';
 import { PageFrame, SectionWithHeading, primitives } from '@curvenote/scms-core';
-import {
-  withAppContext,
-  withValidFormData,
-  validateFormData,
-} from '@curvenote/scms-server';
+import { withAppContext, withValidFormData, validateFormData } from '@curvenote/scms-server';
 import { z } from 'zod';
 import { zfd } from 'zod-form-data';
 import { getComplianceReportsSharedWith } from '../../backend/access.server.js';
 import { ScientistListItem } from '../../components/ScientistListItem.js';
 import { RequestDashboardForm } from '../../components/RequestDashboardForm.js';
-import type { NormalizedScientist } from '../../backend/types.js';
+import type { NormalizedScientist, ComplianceUserMetadataSection } from '../../backend/types.js';
 import { fetchScientistByOrcid } from '../../backend/airtable.scientists.server.js';
-import {
-  handleRequestDashboardShare,
-  handleInviteNewUser,
-} from './actionHelpers.server.js';
+import { handleRequestDashboardShare, handleInviteNewUser } from './actionHelpers.server.js';
 
 interface LoaderData {
   scientists: NormalizedScientist[];
+  complianceRole?: 'scientist' | 'lab-manager';
 }
 
 export const meta = () => {
@@ -62,11 +56,7 @@ const InviteNewUserSchema = zfd.formData({
 export function shouldRevalidate(args?: { formAction?: string; [key: string]: any }) {
   // Prevent revalidation for dashboard request actions to avoid closing dialogs and unnecessary reloads
   const formAction = args?.formAction;
-  if (
-    formAction &&
-    typeof formAction === 'string' &&
-    formAction.includes('/compliance/shared')
-  ) {
+  if (formAction && typeof formAction === 'string' && formAction.includes('/compliance/shared')) {
     return false;
   }
   return true;
@@ -144,8 +134,12 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | Res
     }),
   );
 
+  const userData = (ctx.user.data as ComplianceUserMetadataSection) || { compliance: {} };
+  const complianceRole = userData.compliance?.role;
+
   return {
     scientists,
+    complianceRole,
   };
 }
 

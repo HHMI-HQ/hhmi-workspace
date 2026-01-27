@@ -1,24 +1,20 @@
-import { ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { usePingEvent, LoadingSpinner, primitives } from '@curvenote/scms-core';
+import { LoadingSpinner, primitives } from '@curvenote/scms-core';
 import { HHMITrackEvent } from './analytics/events.js';
+import { useCompliancePingEvent } from './utils/analytics.js';
 import myOpenAccessComplianceIcon from './assets/my-compliance-lock.svg';
 
 export function ComplianceReportTaskCard() {
   const navigate = useNavigate();
-  const pingEvent = usePingEvent();
+  const pingEvent = useCompliancePingEvent();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClick = async () => {
     setIsLoading(true);
 
     // Track button click
-    pingEvent(
-      HHMITrackEvent.HHMI_COMPLIANCE_REPORT_TASK_CLICKED,
-      {},
-      { anonymous: true, ignoreAdmin: true },
-    );
+    pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_REPORT_TASK_CLICKED, {}, { ignoreAdmin: true });
 
     // Simulate a brief loading state
     await new Promise((resolve) => setTimeout(resolve, 300));

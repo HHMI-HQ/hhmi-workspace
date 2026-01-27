@@ -1,5 +1,6 @@
 import { buildUrl } from 'doi-utils';
-import { ui, usePingEvent, cn } from '@curvenote/scms-core';
+import { ui, cn } from '@curvenote/scms-core';
+import { useCompliancePingEvent } from '../utils/analytics.js';
 import { ExternalLink, Check, X, Sparkles } from 'lucide-react';
 import { HHMITrackEvent } from '../analytics/events.js';
 
@@ -39,7 +40,7 @@ export function JournalLinkBadge({
   viewContext: ViewContext;
   viewLocation: ViewLocation;
 }) {
-  const pingEvent = usePingEvent();
+  const pingEvent = useCompliancePingEvent();
 
   return (
     <ui.SimpleTooltip title="Digital Object Identifier" asChild={false} delayDuration={1000}>
@@ -50,20 +51,16 @@ export function JournalLinkBadge({
           rel="noopener noreferrer"
           className="inline-flex gap-1 items-center"
           onClick={() =>
-            pingEvent(
-              HHMITrackEvent.HHMI_COMPLIANCE_DOI_LINK_CLICKED,
-              {
-                publicationId,
-                publicationTitle,
-                doi,
-                doiType: 'journal',
-                linkUrl: buildUrl(doi),
-                orcid,
-                viewContext,
-                viewLocation,
-              },
-              { anonymous: true },
-            )
+            pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_DOI_LINK_CLICKED, {
+              publicationId,
+              publicationTitle,
+              doi,
+              doiType: 'journal',
+              linkUrl: buildUrl(doi),
+              orcid,
+              viewContext,
+              viewLocation,
+            })
           }
         >
           Journal <ExternalLink className="w-3 h-3" />
@@ -92,7 +89,7 @@ export function PreprintLinkBadge({
   viewContext: ViewContext;
   viewLocation: ViewLocation;
 }) {
-  const pingEvent = usePingEvent();
+  const pingEvent = useCompliancePingEvent();
 
   return (
     <ui.SimpleTooltip
@@ -107,20 +104,16 @@ export function PreprintLinkBadge({
           rel="noopener noreferrer"
           className="inline-flex gap-1 items-center"
           onClick={() =>
-            pingEvent(
-              HHMITrackEvent.HHMI_COMPLIANCE_DOI_LINK_CLICKED,
-              {
-                publicationId,
-                publicationTitle,
-                doi: preprintDoi,
-                doiType: 'preprint',
-                linkUrl: buildUrl(preprintDoi),
-                orcid,
-                viewContext,
-                viewLocation,
-              },
-              { anonymous: true },
-            )
+            pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_DOI_LINK_CLICKED, {
+              publicationId,
+              publicationTitle,
+              doi: preprintDoi,
+              doiType: 'preprint',
+              linkUrl: buildUrl(preprintDoi),
+              orcid,
+              viewContext,
+              viewLocation,
+            })
           }
         >
           Preprint <ExternalLink className="w-3 h-3" />
@@ -149,7 +142,7 @@ export function PubMedLink({
   viewLocation: ViewLocation;
   preprint?: boolean;
 }) {
-  const pingEvent = usePingEvent();
+  const pingEvent = useCompliancePingEvent();
 
   return (
     <ui.SimpleTooltip
@@ -164,20 +157,16 @@ export function PubMedLink({
           rel="noopener noreferrer"
           className="inline-flex gap-[2px] items-center"
           onClick={() =>
-            pingEvent(
-              HHMITrackEvent.HHMI_COMPLIANCE_PUBMED_LINK_CLICKED,
-              {
-                publicationId,
-                publicationTitle,
-                linkType: 'PubMed',
-                pmid,
-                linkUrl: `https://pubmed.ncbi.nlm.nih.gov/${pmid}/`,
-                orcid,
-                viewContext,
-                viewLocation,
-              },
-              { anonymous: true },
-            )
+            pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_PUBMED_LINK_CLICKED, {
+              publicationId,
+              publicationTitle,
+              linkType: 'PubMed',
+              pmid,
+              linkUrl: `https://pubmed.ncbi.nlm.nih.gov/${pmid}/`,
+              orcid,
+              viewContext,
+              viewLocation,
+            })
           }
         >
           {preprint ? 'PubMed (preprint)' : 'PubMed'}
@@ -207,7 +196,7 @@ export function PubMedLinkBadge({
   viewLocation: ViewLocation;
   preprint?: boolean;
 }) {
-  const pingEvent = usePingEvent();
+  const pingEvent = useCompliancePingEvent();
 
   return (
     <ui.SimpleTooltip
@@ -222,20 +211,16 @@ export function PubMedLinkBadge({
           rel="noopener noreferrer"
           className="inline-flex gap-1 items-center"
           onClick={() =>
-            pingEvent(
-              HHMITrackEvent.HHMI_COMPLIANCE_PUBMED_LINK_CLICKED,
-              {
-                publicationId,
-                publicationTitle,
-                linkType: 'PubMed',
-                pmid,
-                linkUrl: `https://pubmed.ncbi.nlm.nih.gov/${pmid}/`,
-                orcid,
-                viewContext,
-                viewLocation,
-              },
-              { anonymous: true },
-            )
+            pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_PUBMED_LINK_CLICKED, {
+              publicationId,
+              publicationTitle,
+              linkType: 'PubMed',
+              pmid,
+              linkUrl: `https://pubmed.ncbi.nlm.nih.gov/${pmid}/`,
+              orcid,
+              viewContext,
+              viewLocation,
+            })
           }
         >
           {preprint ? 'PubMed (preprint)' : 'PubMed'}
@@ -265,7 +250,7 @@ export function PMCLinkBadge({
   viewLocation: ViewLocation;
   preprint?: boolean;
 }) {
-  const pingEvent = usePingEvent();
+  const pingEvent = useCompliancePingEvent();
 
   return (
     <ui.SimpleTooltip
@@ -280,20 +265,16 @@ export function PMCLinkBadge({
           rel="noopener noreferrer"
           className="inline-flex gap-1 items-center"
           onClick={() =>
-            pingEvent(
-              HHMITrackEvent.HHMI_COMPLIANCE_PMC_LINK_CLICKED,
-              {
-                publicationId,
-                pmcid,
-                publicationTitle,
-                linkType: 'PMC',
-                linkUrl: `https://www.ncbi.nlm.nih.gov/pmc/articles/${pmcid}/`,
-                orcid,
-                viewContext,
-                viewLocation,
-              },
-              { anonymous: true },
-            )
+            pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_PMC_LINK_CLICKED, {
+              publicationId,
+              pmcid,
+              publicationTitle,
+              linkType: 'PMC',
+              linkUrl: `https://www.ncbi.nlm.nih.gov/pmc/articles/${pmcid}/`,
+              orcid,
+              viewContext,
+              viewLocation,
+            })
           }
         >
           {preprint ? 'PubMed Central (preprint)' : 'PubMed Central'}
@@ -323,7 +304,7 @@ export function PMCLink({
   viewLocation: ViewLocation;
   preprint?: boolean;
 }) {
-  const pingEvent = usePingEvent();
+  const pingEvent = useCompliancePingEvent();
 
   return (
     <ui.SimpleTooltip
@@ -338,20 +319,16 @@ export function PMCLink({
           rel="noopener noreferrer"
           className="inline-flex gap-[2px] items-center"
           onClick={() =>
-            pingEvent(
-              HHMITrackEvent.HHMI_COMPLIANCE_PMC_LINK_CLICKED,
-              {
-                publicationId,
-                pmcid,
-                publicationTitle,
-                linkType: 'PMC',
-                linkUrl: `https://www.ncbi.nlm.nih.gov/pmc/articles/${pmcid}/`,
-                orcid,
-                viewContext,
-                viewLocation,
-              },
-              { anonymous: true },
-            )
+            pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_PMC_LINK_CLICKED, {
+              publicationId,
+              pmcid,
+              publicationTitle,
+              linkType: 'PMC',
+              linkUrl: `https://www.ncbi.nlm.nih.gov/pmc/articles/${pmcid}/`,
+              orcid,
+              viewContext,
+              viewLocation,
+            })
           }
         >
           {preprint ? 'PubMed Central (preprint)' : 'PubMed Central'}
@@ -381,7 +358,7 @@ export function CurvenotePMCLinkBadge({
   viewLocation: ViewLocation;
   preprint?: boolean;
 }) {
-  const pingEvent = usePingEvent();
+  const pingEvent = useCompliancePingEvent();
 
   return (
     <ui.SimpleTooltip
@@ -396,20 +373,16 @@ export function CurvenotePMCLinkBadge({
           rel="noopener noreferrer"
           className="inline-flex gap-1 items-center"
           onClick={() =>
-            pingEvent(
-              HHMITrackEvent.HHMI_COMPLIANCE_ENHANCED_PMC_LINK_CLICKED,
-              {
-                publicationId,
-                publicationTitle,
-                linkType: 'Enhanced PMC',
-                pmcid,
-                linkUrl: `https://overlay.curvenote.dev/${pmcid}`,
-                orcid,
-                viewContext,
-                viewLocation,
-              },
-              { anonymous: true },
-            )
+            pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_ENHANCED_PMC_LINK_CLICKED, {
+              publicationId,
+              publicationTitle,
+              linkType: 'Enhanced PMC',
+              pmcid,
+              linkUrl: `https://overlay.curvenote.dev/${pmcid}`,
+              orcid,
+              viewContext,
+              viewLocation,
+            })
           }
         >
           <Sparkles className="w-3 h-3" />
@@ -440,7 +413,7 @@ export function CurvenotePMCLink({
   viewLocation: ViewLocation;
   preprint?: boolean;
 }) {
-  const pingEvent = usePingEvent();
+  const pingEvent = useCompliancePingEvent();
 
   return (
     <ui.SimpleTooltip
@@ -455,20 +428,16 @@ export function CurvenotePMCLink({
           rel="noopener noreferrer"
           className="inline-flex gap-[2px] items-center"
           onClick={() =>
-            pingEvent(
-              HHMITrackEvent.HHMI_COMPLIANCE_ENHANCED_PMC_LINK_CLICKED,
-              {
-                publicationId,
-                publicationTitle,
-                linkType: 'Enhanced PMC',
-                pmcid,
-                linkUrl: `https://overlay.curvenote.dev/${pmcid}`,
-                orcid,
-                viewContext,
-                viewLocation,
-              },
-              { anonymous: true },
-            )
+            pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_ENHANCED_PMC_LINK_CLICKED, {
+              publicationId,
+              publicationTitle,
+              linkType: 'Enhanced PMC',
+              pmcid,
+              linkUrl: `https://overlay.curvenote.dev/${pmcid}`,
+              orcid,
+              viewContext,
+              viewLocation,
+            })
           }
         >
           <Sparkles className="w-3 h-3" />
@@ -498,7 +467,7 @@ export function CurvenotePreprintLinkBadge({
   viewContext: ViewContext;
   viewLocation: ViewLocation;
 }) {
-  const pingEvent = usePingEvent();
+  const pingEvent = useCompliancePingEvent();
 
   return (
     <ui.SimpleTooltip title="Enhanced Preprint" asChild={false} delayDuration={1000}>
@@ -509,20 +478,16 @@ export function CurvenotePreprintLinkBadge({
           rel="noopener noreferrer"
           className="inline-flex gap-1 items-center"
           onClick={() =>
-            pingEvent(
-              HHMITrackEvent.HHMI_COMPLIANCE_ENHANCED_PREPRINT_LINK_CLICKED,
-              {
-                publicationId,
-                publicationTitle,
-                linkType: 'Enhanced Preprint',
-                preprintDoi,
-                linkUrl: `https://overlay.curvenote.dev/doi/${preprintDoi}`,
-                orcid,
-                viewContext,
-                viewLocation,
-              },
-              { anonymous: true },
-            )
+            pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_ENHANCED_PREPRINT_LINK_CLICKED, {
+              publicationId,
+              publicationTitle,
+              linkType: 'Enhanced Preprint',
+              preprintDoi,
+              linkUrl: `https://overlay.curvenote.dev/doi/${preprintDoi}`,
+              orcid,
+              viewContext,
+              viewLocation,
+            })
           }
         >
           <Sparkles className="w-3 h-3" />
@@ -552,7 +517,7 @@ export function CurvenotePreprintLink({
   viewContext: ViewContext;
   viewLocation: ViewLocation;
 }) {
-  const pingEvent = usePingEvent();
+  const pingEvent = useCompliancePingEvent();
 
   return (
     <ui.SimpleTooltip title="Enhanced Preprint" asChild={false} delayDuration={1000}>
@@ -563,20 +528,16 @@ export function CurvenotePreprintLink({
           rel="noopener noreferrer"
           className="inline-flex gap-[2px] items-center"
           onClick={() =>
-            pingEvent(
-              HHMITrackEvent.HHMI_COMPLIANCE_ENHANCED_PREPRINT_LINK_CLICKED,
-              {
-                publicationId,
-                publicationTitle,
-                linkType: 'Enhanced Preprint',
-                preprintDoi,
-                linkUrl: `https://overlay.curvenote.dev/doi/${preprintDoi}`,
-                orcid,
-                viewContext,
-                viewLocation,
-              },
-              { anonymous: true },
-            )
+            pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_ENHANCED_PREPRINT_LINK_CLICKED, {
+              publicationId,
+              publicationTitle,
+              linkType: 'Enhanced Preprint',
+              preprintDoi,
+              linkUrl: `https://overlay.curvenote.dev/doi/${preprintDoi}`,
+              orcid,
+              viewContext,
+              viewLocation,
+            })
           }
         >
           <Sparkles className="w-3 h-3" />

@@ -1,4 +1,4 @@
-import { withAppContext, withValidFormData } from '@curvenote/scms-server';
+import { withAppContext, withValidFormData, userHasScopes } from '@curvenote/scms-server';
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
 import { redirect } from 'react-router';
 import type { ComplianceUserMetadataSection } from '../../backend/types.js';
@@ -9,26 +9,25 @@ import { HHMITrackEvent } from '../../analytics/events.js';
 import { z } from 'zod';
 import { zfd } from 'zod-form-data';
 import { RoleSelectionCard } from './RoleSelectionCard.js';
-import { userHasScopes } from '@curvenote/scms-server';
 import { hhmi } from '../../backend/scopes.js';
 
 export async function loader(args: LoaderFunctionArgs) {
   const ctx = await withAppContext(args);
   const userData = (ctx.user.data as ComplianceUserMetadataSection) || { compliance: {} };
-  const role = userData.compliance?.role;
+  const complianceRole = userData.compliance?.role;
 
   // If role is already set, redirect to appropriate page
-  if (role === 'scientist') {
+  if (complianceRole === 'scientist') {
     throw redirect('/app/compliance/reports/me');
   }
-  if (role === 'lab-manager') {
+  if (complianceRole === 'lab-manager') {
     if (userHasScopes(ctx.user, [hhmi.compliance.admin])) {
       throw redirect('/app/compliance/scientists');
     }
     throw redirect('/app/compliance/shared');
   }
 
-  return {};
+  return { complianceRole };
 }
 
 /**
@@ -46,13 +45,20 @@ export async function action(args: ActionFunctionArgs) {
     RoleSelectionSchema,
     formData,
     async (payload: z.infer<typeof RoleSelectionSchema>) => {
+      // Get the old role before updating
+      const userData = (ctx.user.data as ComplianceUserMetadataSection) || { compliance: {} };
+      const previousComplianceRole = userData.compliance?.role;
+
       await updateUserComplianceMetadata(ctx.user.id, { role: payload.role });
 
       // Track role qualification
+      // Use the new role value directly (not from ctx.user.data which hasn't been updated yet)
       await ctx.trackEvent(HHMITrackEvent.HHMI_COMPLIANCE_ROLE_QUALIFIED, {
         role: payload.role,
         userId: ctx.user.id,
         autoSet: false,
+        complianceRole: payload.role, // Use the NEW role being set
+        previousComplianceRole, // The OLD role before update (likely undefined for first-time qualification)
       });
 
       // Redirect based on role

@@ -1,18 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useFetcher } from 'react-router';
-import {
-  ui,
-  primitives,
-  usePingEvent,
-  InviteUserDialog,
-  useDeploymentConfig,
-} from '@curvenote/scms-core';
+import { ui, primitives, InviteUserDialog, useDeploymentConfig } from '@curvenote/scms-core';
 import { AlertCircle } from 'lucide-react';
 import type { GeneralError } from '@curvenote/scms-core';
 import { AccessGrantItem } from './AccessGrantItem.js';
 import { ShareReportForm } from './ShareReportForm.js';
 import { HHMITrackEvent } from '../analytics/events.js';
-import { NormalizedScientist } from 'src/backend/types.js';
+import { useCompliancePingEvent } from '../utils/analytics.js';
+import type { NormalizedScientist } from 'src/backend/types.js';
 
 interface AccessGrant {
   id: string;
@@ -174,7 +169,7 @@ export function ShareReportDialog({
   actionUrl,
   compact = false,
 }: ShareReportDialogProps) {
-  const pingEvent = usePingEvent();
+  const pingEvent = useCompliancePingEvent();
   const [grantsRequested, setGrantsRequested] = useState<boolean>(false);
   const [scientistExists, setScientistExists] = useState<boolean | null>(null);
   const [accessGrants, setAccessGrants] = useState<AccessGrant[]>([]);
@@ -230,15 +225,11 @@ export function ShareReportDialog({
 
   const handleDialogOpenChange = (dialogOpen: boolean) => {
     if (!dialogOpen) {
-      pingEvent(
-        HHMITrackEvent.HHMI_COMPLIANCE_REPORT_SHARE_MODAL_CLOSED,
-        {
-          orcid: scientist.orcid,
-          scientistName: scientist.fullName,
-          closeMethod: 'x-button-or-click-outside-or-escape',
-        },
-        { anonymous: true },
-      );
+      pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_REPORT_SHARE_MODAL_CLOSED, {
+        orcid: scientist.orcid,
+        scientistName: scientist.fullName,
+        closeMethod: 'x-button-or-click-outside-or-escape',
+      });
     }
     onOpenChange(dialogOpen);
   };

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BookCheckIcon, User, UserPlus } from 'lucide-react';
-import { SectionWithHeading, ui, RequestHelpDialog, usePingEvent } from '@curvenote/scms-core';
+import { SectionWithHeading, ui, RequestHelpDialog } from '@curvenote/scms-core';
+import { useCompliancePingEvent } from '../utils/analytics.js';
 import { ScientistCard } from './ScientistCard.js';
 import { ScientistCardSkeleton } from './ScientistCardSkeleton.js';
 import { NonCoveredPublicationsSection } from './NonCoveredPublicationSection.js';
@@ -47,7 +48,7 @@ export function ComplianceReport({
   emptyMessageNotCovered,
 }: ComplianceReportProps) {
   const [showHelpDialog, setShowHelpDialog] = useState(false);
-  const pingEvent = usePingEvent();
+  const pingEvent = useCompliancePingEvent();
 
   // Resolve scientist promise if it's a promise, otherwise use the value directly
   const [scientist, setScientist] = useState<NormalizedScientist | undefined>(
@@ -74,42 +75,30 @@ export function ComplianceReport({
   }, [scientistProp]);
 
   const handleShareClick = () => {
-    pingEvent(
-      HHMITrackEvent.HHMI_COMPLIANCE_REPORT_SHARE_CLICKED,
-      {
-        orcid,
-        scientistName: scientist?.fullName,
-      },
-      { anonymous: true },
-    );
+    pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_REPORT_SHARE_CLICKED, {
+      orcid,
+      scientistName: scientist?.fullName,
+    });
     onShareClick?.();
   };
 
   const handleHelpClick = () => {
-    pingEvent(
-      HHMITrackEvent.HHMI_COMPLIANCE_HELP_REQUESTED,
-      {
-        orcid,
-        scientistName: scientist?.fullName,
-        context: 'compliance-report',
-      },
-      { anonymous: true },
-    );
+    pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_HELP_REQUESTED, {
+      orcid,
+      scientistName: scientist?.fullName,
+      context: 'compliance-report',
+    });
     setShowHelpDialog(true);
   };
 
   const handleHelpDialogClose = (open: boolean) => {
     if (!open) {
-      pingEvent(
-        HHMITrackEvent.HHMI_COMPLIANCE_HELP_MODAL_CLOSED,
-        {
-          orcid,
-          scientistName: scientist?.fullName,
-          context: 'compliance-report',
-          closeMethod: 'click-outside-or-escape',
-        },
-        { anonymous: true },
-      );
+      pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_HELP_MODAL_CLOSED, {
+        orcid,
+        scientistName: scientist?.fullName,
+        context: 'compliance-report',
+        closeMethod: 'click-outside-or-escape',
+      });
     }
     setShowHelpDialog(open);
   };
