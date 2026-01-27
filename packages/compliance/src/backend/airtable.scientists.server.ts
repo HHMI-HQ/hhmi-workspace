@@ -23,7 +23,10 @@ function normalizeScientist(scientistData: ScientistData): NormalizedScientist {
     orcid: fields[SCIENTIST_FIELDS.orcid_identifier.id],
     firstName: fields[SCIENTIST_FIELDS.first_name_primary.id] || '',
     lastName: fields[SCIENTIST_FIELDS.last_name_primary.id] || '',
-    fullName: fields[SCIENTIST_FIELDS.full_name_primary.id] || '',
+    fullName:
+      fields[SCIENTIST_FIELDS.full_name_with_preferred.id] ||
+      fields[SCIENTIST_FIELDS.full_name_primary.id] ||
+      '',
     email: fields[SCIENTIST_FIELDS.email.id] || '',
     program: fields[SCIENTIST_FIELDS.program.id] || '',
     employeeId: fields[SCIENTIST_FIELDS.employee_id.id] || '',
