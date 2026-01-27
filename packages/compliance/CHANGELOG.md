@@ -1,5 +1,13 @@
 # @hhmi/compliance
 
+## 0.1.7
+
+### Patch Changes
+
+- 75c75b6: Remove feature flag read for launch
+- fdd4cdf: Pre-launch analytics overview and improvement
+- 342c94e: Show 'Full Name with Preferred' on dashboard when available, falling back to primary
+
 ## 0.1.6
 
 ### Patch Changes
