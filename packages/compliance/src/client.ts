@@ -37,7 +37,6 @@ export function getTasks(): ExtensionTask[] {
       description:
         'Get an up to date review of the compliance of your preprints and journal articles.',
       component: ComplianceReportTaskCard,
-      scopes: ['hhmi:compliance:feature:dashboard'],
     },
     {
       id: 'compliance-wizard',
