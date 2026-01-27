@@ -8,6 +8,7 @@ import {
 import { ScientistListItem } from './ScientistListItem.js';
 import type { NormalizedScientist } from '../backend/types.js';
 import { useCallback } from 'react';
+import { TimeoutErrorHandler, TimeoutErrorDisplay } from './TimeoutErrorHandler.js';
 
 interface ScientistsListProps {
   scientists: Promise<NormalizedScientist[]>;
@@ -42,24 +43,31 @@ export function ScientistsList({ scientists }: ScientistsListProps) {
   };
 
   return (
-    <ui.ClientFilterableList
-      items={scientists}
-      filters={HHMI_FILTERS}
-      searchComponent={(searchTerm, setSearchTerm) => (
-        <HHMIClientSearch searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+    <TimeoutErrorHandler promise={scientists}>
+      {({ error, isRetrying, retry }) => (
+        <>
+          <TimeoutErrorDisplay error={error} isRetrying={isRetrying} onRetry={retry} />
+          <ui.ClientFilterableList
+            items={scientists}
+            filters={HHMI_FILTERS}
+            searchComponent={(searchTerm, setSearchTerm) => (
+              <HHMIClientSearch searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+            )}
+            filterBar={(items, activeFilters, setActiveFilters, filterDefinitions) => (
+              <HHMIClientFilterBar
+                items={items}
+                activeFilters={activeFilters}
+                setActiveFilters={setActiveFilters}
+                filterDefinitions={filterDefinitions}
+              />
+            )}
+            filterItems={applySearchAndFilters}
+            renderItem={renderScientist}
+            getItemKey={(scientist: NormalizedScientist) => scientist.id}
+            persist
+          />
+        </>
       )}
-      filterBar={(items, activeFilters, setActiveFilters, filterDefinitions) => (
-        <HHMIClientFilterBar
-          items={items}
-          activeFilters={activeFilters}
-          setActiveFilters={setActiveFilters}
-          filterDefinitions={filterDefinitions}
-        />
-      )}
-      filterItems={applySearchAndFilters}
-      renderItem={renderScientist}
-      getItemKey={(scientist: NormalizedScientist) => scientist.id}
-      persist
-    />
+    </TimeoutErrorHandler>
   );
 }

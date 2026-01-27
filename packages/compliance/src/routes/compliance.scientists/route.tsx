@@ -27,54 +27,6 @@ interface LoaderData {
 // Module-level cache for scientist data
 let scientistCache: NormalizedScientist[] | null = null;
 
-/**
- * Retry a function with fixed delays, only retrying on timeout errors.
- * @param fn - The function to retry
- * @param delays - Array of delays in milliseconds between retries (default: [500, 1000])
- * @returns The result of the function
- */
-async function retryWithBackoff<T>(
-  fn: () => Promise<T>,
-  delays: number[] = [500, 1000],
-): Promise<T> {
-  let lastError: Error | unknown;
-
-  // Total attempts = initial attempt + number of retries (delays.length)
-  const maxAttempts = delays.length + 1;
-
-  for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    try {
-      return await fn();
-    } catch (error) {
-      lastError = error;
-
-      // Only retry on timeout errors
-      const isTimeoutError =
-        error instanceof Error &&
-        (error.message.includes('Server Timeout') ||
-          error.message.includes('timeout') ||
-          error.message.includes('Timeout'));
-
-      // Don't retry if it's not a timeout error or we've exhausted retries
-      if (!isTimeoutError || attempt === maxAttempts - 1) {
-        throw error;
-      }
-
-      // Get the delay for this retry attempt
-      const delay = delays[attempt];
-      console.warn(
-        `ServerLoader timeout (attempt ${attempt + 1}/${maxAttempts}), retrying in ${delay}ms...`,
-      );
-
-      // Wait before retrying
-      await new Promise((resolve) => setTimeout(resolve, delay));
-    }
-  }
-
-  // This should never be reached, but TypeScript needs it
-  throw lastError;
-}
-
 export const meta = () => {
   return [
     { title: 'Management - My Compliance' },
@@ -88,7 +40,7 @@ export const loader = async (args: LoaderFunctionArgs): Promise<LoaderData> => {
   const userData = (ctx.user.data as ComplianceUserMetadataSection) || { compliance: {} };
   const complianceRole = userData.compliance?.role;
   return { scientists, complianceRole };
-}
+};
 
 export const clientLoader = async (args: ClientLoaderFunctionArgs): Promise<LoaderData> => {
   // If we have cached data, return it immediately
@@ -96,13 +48,12 @@ export const clientLoader = async (args: ClientLoaderFunctionArgs): Promise<Load
     return { scientists: Promise.resolve(scientistCache) };
   }
 
-  // No cache, call server loader with retry logic
-  const serverData = await retryWithBackoff(
-    () => args.serverLoader<LoaderData>(),
-    [500, 1000], // 2 retries: 500ms delay, then 1s delay
-  );
+  // No cache, call server loader
+  // Note: Timeout errors are handled client-side via TimeoutErrorHandler component
+  // which displays a user-friendly error message and allows page reload to retry
+  const serverData = await args.serverLoader<LoaderData>();
 
-  // Cache the scientist data vis fire and forget
+  // Cache the scientist data via fire and forget
   serverData.scientists.then((resolvedScientists: any) => {
     scientistCache = resolvedScientists;
   });

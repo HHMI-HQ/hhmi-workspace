@@ -11,6 +11,7 @@ import { NotCoveredArticleItem } from './NotCoveredArticleItem.js';
 import { CoveredPublicationSection } from './CoveredPublicationSection.js';
 import { HHMITrackEvent } from '../analytics/events.js';
 import type { ViewContext } from './Badges.js';
+import { TimeoutErrorHandler, TimeoutErrorDisplay } from './TimeoutErrorHandler.js';
 
 /**
  * Props for the ComplianceReport component.
@@ -103,91 +104,118 @@ export function ComplianceReport({
     setShowHelpDialog(open);
   };
 
+  // Create a promise for timeout error handling
+  const scientistPromiseForTimeout =
+    scientistProp instanceof Promise
+      ? scientistProp
+          .then((result) => result.scientist)
+          .catch((err) => {
+            // Re-throw timeout errors so TimeoutErrorHandler can catch them
+            if (
+              err instanceof Error &&
+              (err.message.includes('Server Timeout') ||
+                err.message.includes('timeout') ||
+                err.message.includes('Timeout'))
+            ) {
+              throw err;
+            }
+            // For other errors, return undefined so they're handled by the existing error state
+            return undefined;
+          })
+      : Promise.resolve(scientistProp);
+
   return (
-    <div className="space-y-8">
-      {error && (
-        <div className="p-4 mb-6 bg-red-50 rounded-lg border border-red-200 dark:bg-red-900/20">
-          <div className="text-red-700 dark:text-red-400">
-            <h3 className="mb-2 font-semibold">Error</h3>
-            <p>{error}</p>
-          </div>
+    <TimeoutErrorHandler promise={scientistPromiseForTimeout}>
+      {({ error: timeoutError, isRetrying, retry }) => (
+        <div className="space-y-8">
+          {timeoutError && (
+            <TimeoutErrorDisplay error={timeoutError} isRetrying={isRetrying} onRetry={retry} />
+          )}
+          {error && !timeoutError && (
+            <div className="p-4 mb-6 bg-red-50 rounded-lg border border-red-200 dark:bg-red-900/20">
+              <div className="text-red-700 dark:text-red-400">
+                <h3 className="mb-2 font-semibold">Error</h3>
+                <p>{error}</p>
+              </div>
+            </div>
+          )}
+          <SectionWithHeading
+            heading={
+              onShareClick ? (
+                <div className="flex justify-between items-center">
+                  <div>Profile</div>
+                  <ui.Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleShareClick}
+                    title={shareButtonText}
+                  >
+                    <UserPlus className="w-4 h-4 stroke-[1.5px]" /> {shareButtonText}
+                  </ui.Button>
+                </div>
+              ) : (
+                <div>Profile</div>
+              )
+            }
+            icon={User}
+          >
+            {isLoadingScientist ? (
+              <ScientistCardSkeleton />
+            ) : (
+              <>
+                <ScientistCard
+                  scientist={scientist}
+                  emptyMessage={`No data found for ORCID: ${orcid}`}
+                />
+                <div className="flex justify-end items-center w-full row">
+                  <ui.Button variant="link" className="text-xs" onClick={handleHelpClick}>
+                    Something not right? Request help.
+                  </ui.Button>
+                </div>
+              </>
+            )}
+          </SectionWithHeading>
+          <RequestHelpDialog
+            orcid={orcid}
+            open={showHelpDialog}
+            onOpenChange={handleHelpDialogClose}
+            prompt="Please give us more details about what is missing or incorrect."
+            title="Request Help from the Open Science Team"
+            successMessage="Your request has been sent to the HHMI Open Science Team. We'll get back to you as soon as possible."
+            intent="general-help"
+          />
+          {!isLoadingScientist && (
+            <SectionWithHeading heading="Publications" icon={BookCheckIcon}>
+              <ui.Tabs defaultValue="covered" className="w-full">
+                <ui.TabsList>
+                  <ui.TabsTrigger value="covered">Under HHMI Policy</ui.TabsTrigger>
+                  <ui.TabsTrigger value="not-covered">Not under HHMI Policy</ui.TabsTrigger>
+                </ui.TabsList>
+                <ui.TabsContent value="covered">
+                  <CoveredPublicationSection
+                    publications={articlesCovered}
+                    emptyMessage={emptyMessageCovered}
+                    ItemComponent={CoveredArticleItem}
+                    orcid={orcid}
+                    scientist={scientist}
+                    viewContext={viewContext}
+                  />
+                </ui.TabsContent>
+                <ui.TabsContent value="not-covered">
+                  <NonCoveredPublicationsSection
+                    publications={articlesNotCovered}
+                    emptyMessage={emptyMessageNotCovered}
+                    ItemComponent={NotCoveredArticleItem}
+                    orcid={orcid}
+                    scientist={scientist}
+                    viewContext={viewContext}
+                  />
+                </ui.TabsContent>
+              </ui.Tabs>
+            </SectionWithHeading>
+          )}
         </div>
       )}
-      <SectionWithHeading
-        heading={
-          onShareClick ? (
-            <div className="flex justify-between items-center">
-              <div>Profile</div>
-              <ui.Button
-                variant="outline"
-                size="sm"
-                onClick={handleShareClick}
-                title={shareButtonText}
-              >
-                <UserPlus className="w-4 h-4 stroke-[1.5px]" /> {shareButtonText}
-              </ui.Button>
-            </div>
-          ) : (
-            <div>Profile</div>
-          )
-        }
-        icon={User}
-      >
-        {isLoadingScientist ? (
-          <ScientistCardSkeleton />
-        ) : (
-          <>
-            <ScientistCard
-              scientist={scientist}
-              emptyMessage={`No data found for ORCID: ${orcid}`}
-            />
-            <div className="flex justify-end items-center w-full row">
-              <ui.Button variant="link" className="text-xs" onClick={handleHelpClick}>
-                Something not right? Request help.
-              </ui.Button>
-            </div>
-          </>
-        )}
-      </SectionWithHeading>
-      <RequestHelpDialog
-        orcid={orcid}
-        open={showHelpDialog}
-        onOpenChange={handleHelpDialogClose}
-        prompt="Please give us more details about what is missing or incorrect."
-        title="Request Help from the Open Science Team"
-        successMessage="Your request has been sent to the HHMI Open Science Team. We'll get back to you as soon as possible."
-        intent="general-help"
-      />
-      {!isLoadingScientist && (
-        <SectionWithHeading heading="Publications" icon={BookCheckIcon}>
-          <ui.Tabs defaultValue="covered" className="w-full">
-            <ui.TabsList>
-              <ui.TabsTrigger value="covered">Under HHMI Policy</ui.TabsTrigger>
-              <ui.TabsTrigger value="not-covered">Not under HHMI Policy</ui.TabsTrigger>
-            </ui.TabsList>
-            <ui.TabsContent value="covered">
-              <CoveredPublicationSection
-                publications={articlesCovered}
-                emptyMessage={emptyMessageCovered}
-                ItemComponent={CoveredArticleItem}
-                orcid={orcid}
-                scientist={scientist}
-                viewContext={viewContext}
-              />
-            </ui.TabsContent>
-            <ui.TabsContent value="not-covered">
-              <NonCoveredPublicationsSection
-                publications={articlesNotCovered}
-                emptyMessage={emptyMessageNotCovered}
-                ItemComponent={NotCoveredArticleItem}
-                orcid={orcid}
-                scientist={scientist}
-                viewContext={viewContext}
-              />
-            </ui.TabsContent>
-          </ui.Tabs>
-        </SectionWithHeading>
-      )}
-    </div>
+    </TimeoutErrorHandler>
   );
 }
