@@ -1,6 +1,6 @@
 name: pmc
 title: PMC Deposit
-description: PubMed Central external site for receviing and administering PMC deposits
+description: PubMed Central external site for receiving and administering PMC deposits
 private: true
 external: true
 default_workflow: PMC_DEPOSIT
