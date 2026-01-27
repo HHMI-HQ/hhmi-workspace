@@ -1,5 +1,12 @@
 # @hhmi/compliance
 
+## 0.1.9
+
+### Patch Changes
+
+- 5d8f298: Attempting to recover from server timeouts via clientside retries
+- 3563ebd: Adding analytics to track timeouts
+
 ## 0.1.8
 
 ### Patch Changes
