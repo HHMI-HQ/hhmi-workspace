@@ -93,14 +93,6 @@ export function ComplianceReport({
   };
 
   const handleHelpDialogClose = (open: boolean) => {
-    if (!open) {
-      pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_HELP_MODAL_CLOSED, {
-        orcid,
-        scientistName: scientist?.fullName,
-        context: 'compliance-report',
-        closeMethod: 'click-outside-or-escape',
-      });
-    }
     setShowHelpDialog(open);
   };
 

@@ -224,13 +224,6 @@ export function ShareReportDialog({
   }, [reloadGrants]);
 
   const handleDialogOpenChange = (dialogOpen: boolean) => {
-    if (!dialogOpen) {
-      pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_REPORT_SHARE_MODAL_CLOSED, {
-        orcid: scientist.orcid,
-        scientistName: scientist.fullName,
-        closeMethod: 'x-button-or-click-outside-or-escape',
-      });
-    }
     onOpenChange(dialogOpen);
   };
 

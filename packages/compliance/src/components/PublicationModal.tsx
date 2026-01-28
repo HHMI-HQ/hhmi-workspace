@@ -278,35 +278,17 @@ export function PublicationModal({
     });
   };
 
-  const trackModalClose = (closeMethod: string) => {
-    pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_PUBLICATION_MODAL_CLOSED, {
-      publicationId: pub.id,
-      publicationTitle: pub.title,
-      closeMethod,
-    });
-  };
-
   const handleCloseButtonClick = () => {
-    trackModalClose('close-button');
     onClose();
   };
 
   const handleDialogOpenChange = (open: boolean) => {
     if (!open) {
-      trackModalClose('click-outside-or-escape');
       onClose();
     }
   };
 
   const handleHelpDialogClose = (open: boolean) => {
-    if (!open) {
-      pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_HELP_MODAL_CLOSED, {
-        publicationId: pub.id,
-        publicationTitle: pub.title,
-        context: 'publication-modal',
-        closeMethod: 'click-outside-or-escape',
-      });
-    }
     setShowHelpDialog(open);
   };
 

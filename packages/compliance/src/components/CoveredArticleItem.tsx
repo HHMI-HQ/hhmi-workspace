@@ -28,6 +28,11 @@ export function CoveredArticleItem({
     pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_PUBLICATION_MODAL_OPENED, {
       publicationId: item.id,
       publicationTitle: item.title,
+      journal_doi: item.journal?.doi,
+      preprint_doi: item.preprint?.doi,
+      compliant: item.compliant ?? false,
+      ever_non_compliant: item.everNonCompliant ?? false,
+      date_resolved: item.dateResolved,
     });
     setIsModalOpen(true);
   };

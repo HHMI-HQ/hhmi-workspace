@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
-import { data, redirect } from 'react-router';
+import { data } from 'react-router';
 import { Library } from 'lucide-react';
 import { PageFrame, SectionWithHeading, primitives } from '@curvenote/scms-core';
 import { withAppContext, withValidFormData, validateFormData } from '@curvenote/scms-server';
