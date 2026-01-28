@@ -1,5 +1,13 @@
 # @hhmi/compliance
 
+## 0.1.10
+
+### Patch Changes
+
+- 5a2d03c: Removed modal closed events
+- adadb07: Fixes scientist card update bug when switching between two shared dashboards
+- 5a2d03c: Added properties to HHMI_COMPLIANCE_PUBLICATION_MODAL_OPENED event
+
 ## 0.1.9
 
 ### Patch Changes
