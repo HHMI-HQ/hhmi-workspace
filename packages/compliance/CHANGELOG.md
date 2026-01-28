@@ -1,5 +1,11 @@
 # @hhmi/compliance
 
+## 0.1.11
+
+### Patch Changes
+
+- e59b2d9: Add `path` and `isComplianceManager` to all events
+
 ## 0.1.10
 
 ### Patch Changes
