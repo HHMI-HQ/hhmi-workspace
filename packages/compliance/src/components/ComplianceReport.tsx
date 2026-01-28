@@ -72,8 +72,13 @@ export function ComplianceReport({
           setError('Failed to load scientist data');
           setIsLoadingScientist(false);
         });
+    } else {
+      // Handle non-Promise scientist prop changes (e.g., when route parameter changes)
+      setScientist(scientistProp);
+      setError(errorProp);
+      setIsLoadingScientist(false);
     }
-  }, [scientistProp]);
+  }, [scientistProp, errorProp, orcid]);
 
   const handleShareClick = () => {
     pingEvent(HHMITrackEvent.HHMI_COMPLIANCE_REPORT_SHARE_CLICKED, {
