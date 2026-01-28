@@ -13,10 +13,13 @@ import type { ComplianceWizardConfig, ComplianceWizardState } from '../common/co
 import { complianceWizardConfig } from '../common/compliance-wizard.config.js';
 import { composeHelpRequestEmailBody } from '../email/compose-help-request-email.js';
 import type { ComplianceUserMetadataSection } from '../backend/types.js';
+import { isUserComplianceManager } from '../utils/analytics.server.js';
 
 interface LoaderData {
   config: ComplianceWizardConfig;
   complianceRole?: 'scientist' | 'lab-manager';
+  path?: string;
+  isComplianceManager?: boolean;
 }
 
 export const meta: MetaFunction<LoaderData> = ({ matches }) => {
@@ -36,8 +39,14 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | Res
   const config = complianceWizardConfig;
   const userData = (ctx.user.data as ComplianceUserMetadataSection) || { compliance: {} };
   const complianceRole = userData.compliance?.role;
+  const path = new URL(args.request.url).pathname;
 
-  return { config, complianceRole };
+  return {
+    config,
+    complianceRole,
+    path,
+    isComplianceManager: isUserComplianceManager(ctx.user),
+  };
 }
 
 export const action = async (args: ActionFunctionArgs) => {

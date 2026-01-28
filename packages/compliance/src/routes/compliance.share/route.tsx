@@ -13,12 +13,17 @@ import { AccessGrantItem } from '../../components/AccessGrantItem.js';
 import { hhmi } from '../../backend/scopes.js';
 import type { AccessGrants } from '@curvenote/scms-server';
 import { HHMITrackEvent } from '../../analytics/events.js';
-import { addComplianceRoleToPayload } from '../../utils/analytics.server.js';
+import {
+  addComplianceRoleToPayload,
+  isUserComplianceManager,
+} from '../../utils/analytics.server.js';
 import type { ComplianceUserMetadataSection } from '../../backend/types.js';
 
 interface LoaderData {
   accessGrants: Awaited<ReturnType<typeof getComplianceAccessGrantedBy>>;
   complianceRole?: 'scientist' | 'lab-manager';
+  path?: string;
+  isComplianceManager?: boolean;
 }
 
 export const meta = () => {
@@ -33,7 +38,13 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData> {
   const accessGrants = await getComplianceAccessGrantedBy(ctx.user.id);
   const userData = (ctx.user.data as ComplianceUserMetadataSection) || { compliance: {} };
   const complianceRole = userData.compliance?.role;
-  return { accessGrants, complianceRole };
+  const path = new URL(args.request.url).pathname;
+  return {
+    accessGrants,
+    complianceRole,
+    path,
+    isComplianceManager: isUserComplianceManager(ctx.user),
+  };
 }
 
 export async function action(args: ActionFunctionArgs) {

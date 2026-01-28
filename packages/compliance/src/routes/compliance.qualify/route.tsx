@@ -2,6 +2,7 @@ import { withAppContext, withValidFormData, userHasScopes } from '@curvenote/scm
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
 import { redirect } from 'react-router';
 import type { ComplianceUserMetadataSection } from '../../backend/types.js';
+import { isUserComplianceManager } from '../../utils/analytics.server.js';
 import { PageFrame } from '@curvenote/scms-core';
 import { User, Users } from 'lucide-react';
 import { updateUserComplianceMetadata } from '../../backend/actionHelpers.server.js';
@@ -27,7 +28,12 @@ export async function loader(args: LoaderFunctionArgs) {
     throw redirect('/app/compliance/shared');
   }
 
-  return { complianceRole };
+  const path = new URL(args.request.url).pathname;
+  return {
+    complianceRole,
+    path,
+    isComplianceManager: isUserComplianceManager(ctx.user),
+  };
 }
 
 /**

@@ -11,6 +11,7 @@ import { hhmi } from '../backend/scopes.js';
 import { extension } from '../client.js';
 import type { ComplianceUserMetadataSection } from '../backend/types.js';
 import type { ComplianceReportSharedWith } from '../backend/access.server.js';
+import { isUserComplianceManager } from '../utils/analytics.server.js';
 
 interface LoaderData {
   menu: ServerSideMenuContents;
@@ -19,6 +20,8 @@ interface LoaderData {
   isComplianceAdmin: boolean;
   userComplianceRole?: 'scientist' | 'lab-manager';
   complianceRole?: 'scientist' | 'lab-manager'; // For analytics - same as userComplianceRole
+  path?: string;
+  isComplianceManager?: boolean;
   sharedReports: Promise<ComplianceReportSharedWith[]>;
 }
 
@@ -88,6 +91,8 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData> {
     isComplianceAdmin,
     userComplianceRole,
     complianceRole: userComplianceRole, // For analytics
+    path: pathname,
+    isComplianceManager: isUserComplianceManager(ctx.user),
     sharedReports: sharedReportsPromise,
   };
 }

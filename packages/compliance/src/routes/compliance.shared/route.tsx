@@ -11,10 +11,13 @@ import { RequestDashboardForm } from '../../components/RequestDashboardForm.js';
 import type { NormalizedScientist, ComplianceUserMetadataSection } from '../../backend/types.js';
 import { fetchScientistByOrcid } from '../../backend/airtable.scientists.server.js';
 import { handleRequestDashboardShare, handleInviteNewUser } from './actionHelpers.server.js';
+import { isUserComplianceManager } from '../../utils/analytics.server.js';
 
 interface LoaderData {
   scientists: NormalizedScientist[];
   complianceRole?: 'scientist' | 'lab-manager';
+  path?: string;
+  isComplianceManager?: boolean;
 }
 
 export const meta = () => {
@@ -136,10 +139,13 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | Res
 
   const userData = (ctx.user.data as ComplianceUserMetadataSection) || { compliance: {} };
   const complianceRole = userData.compliance?.role;
+  const path = new URL(args.request.url).pathname;
 
   return {
     scientists,
     complianceRole,
+    path,
+    isComplianceManager: isUserComplianceManager(ctx.user),
   };
 }
 

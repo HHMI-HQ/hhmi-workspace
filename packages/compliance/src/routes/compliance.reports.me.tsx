@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { fetchScientistByOrcid } from '../backend/airtable.scientists.server.js';
 import { withAppContext } from '@curvenote/scms-server';
 import { PageFrame } from '@curvenote/scms-core';
+import { isUserComplianceManager } from '../utils/analytics.server.js';
 import { ComplianceReport } from '../components/ComplianceReport.js';
 import {
   fetchEverythingCoveredByPolicy,
@@ -53,6 +54,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | { e
   const enhancedArticleRendering =
     ctx.$config.app.extensions?.['hhmi-compliance']?.enhancedArticleRendering ?? false;
 
+  const path = new URL(args.request.url).pathname;
   return {
     orcid,
     scientist: scientistPromise,
@@ -61,6 +63,8 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | { e
     enhancedArticleRendering,
     dashboardRequested,
     complianceRole,
+    path,
+    isComplianceManager: isUserComplianceManager(ctx.user),
   };
 }
 
@@ -72,6 +76,8 @@ interface LoaderData {
   enhancedArticleRendering: boolean;
   dashboardRequested: boolean;
   complianceRole?: 'scientist' | 'lab-manager';
+  path?: string;
+  isComplianceManager?: boolean;
 }
 
 export function shouldRevalidate(args?: { formAction?: string; [key: string]: any }) {

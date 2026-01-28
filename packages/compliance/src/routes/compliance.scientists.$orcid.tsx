@@ -15,6 +15,7 @@ import type {
   NormalizedScientist,
   ComplianceUserMetadataSection,
 } from '../backend/types.js';
+import { isUserComplianceManager } from '../utils/analytics.server.js';
 
 interface LoaderData {
   scientist: NormalizedScientist | undefined;
@@ -24,6 +25,8 @@ interface LoaderData {
   orcid: string;
   enhancedArticleRendering: boolean;
   complianceRole?: 'scientist' | 'lab-manager';
+  path?: string;
+  isComplianceManager?: boolean;
 }
 
 export const meta = ({ loaderData }: { loaderData: LoaderData }) => {
@@ -48,6 +51,7 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | { e
     ctx.$config.app.extensions?.['hhmi-compliance']?.enhancedArticleRendering ?? false;
   const userData = (ctx.user.data as ComplianceUserMetadataSection) || { compliance: {} };
   const complianceRole = userData.compliance?.role;
+  const path = new URL(args.request.url).pathname;
 
   return {
     scientist,
@@ -57,6 +61,8 @@ export async function loader(args: LoaderFunctionArgs): Promise<LoaderData | { e
     orcid,
     enhancedArticleRendering,
     complianceRole,
+    path,
+    isComplianceManager: isUserComplianceManager(ctx.user),
   };
 }
 

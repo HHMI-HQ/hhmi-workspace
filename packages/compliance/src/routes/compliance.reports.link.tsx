@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { hhmi } from '../backend/scopes.js';
 import { ComplianceInfoCards } from '../components/ComplianceInfoCards.js';
 import type { ComplianceUserMetadataSection } from '../backend/types.js';
+import { isUserComplianceManager } from '../utils/analytics.server.js';
 
 /**
  * ORCID Icon Component - Green square with white "iD" text, or inverted (white background with green text)
@@ -49,10 +50,13 @@ export async function loader(args: LoaderFunctionArgs) {
   const isComplianceAdmin = userHasScopes(ctx.user, [hhmi.compliance.admin]);
   const userData = (ctx.user.data as ComplianceUserMetadataSection) || { compliance: {} };
   const complianceRole = userData.compliance?.role;
+  const path = new URL(args.request.url).pathname;
   return {
     hasOrcid: !!orcidAccount,
     isComplianceAdmin,
     complianceRole,
+    path,
+    isComplianceManager: isUserComplianceManager(ctx.user),
   };
 }
 
@@ -60,6 +64,8 @@ interface LoaderData {
   hasOrcid: boolean;
   isComplianceAdmin: boolean;
   complianceRole?: 'scientist' | 'lab-manager';
+  path?: string;
+  isComplianceManager?: boolean;
 }
 
 export default function LinkAccountLayout() {

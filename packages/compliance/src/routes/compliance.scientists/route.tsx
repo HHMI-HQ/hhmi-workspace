@@ -4,6 +4,7 @@ import { fetchAllScientists } from '../../backend/airtable.scientists.server.js'
 import { hhmi } from '../../backend/scopes.js';
 import { ScientistsList } from '../../components/ScientistList.js';
 import type { NormalizedScientist, ComplianceUserMetadataSection } from '../../backend/types.js';
+import { isUserComplianceManager } from '../../utils/analytics.server.js';
 import {
   getScientistAccessGrants,
   handleAdminShareComplianceReport,
@@ -22,6 +23,8 @@ import type {
 interface LoaderData {
   scientists: Promise<NormalizedScientist[]>;
   complianceRole?: 'scientist' | 'lab-manager';
+  path?: string;
+  isComplianceManager?: boolean;
 }
 
 // Module-level cache for scientist data
@@ -39,7 +42,13 @@ export const loader = async (args: LoaderFunctionArgs): Promise<LoaderData> => {
   const scientists = fetchAllScientists();
   const userData = (ctx.user.data as ComplianceUserMetadataSection) || { compliance: {} };
   const complianceRole = userData.compliance?.role;
-  return { scientists, complianceRole };
+  const path = new URL(args.request.url).pathname;
+  return {
+    scientists,
+    complianceRole,
+    path,
+    isComplianceManager: isUserComplianceManager(ctx.user),
+  };
 };
 
 export const clientLoader = async (args: ClientLoaderFunctionArgs): Promise<LoaderData> => {
