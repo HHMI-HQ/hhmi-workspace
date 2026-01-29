@@ -1,4 +1,4 @@
-import myComplianceIcon from './assets/my-compliance-lock.svg';
+import myComplianceIcon from './assets/open-access-lucide.svg';
 import { cn } from '@curvenote/scms-core';
 
 export function HHMIComplianceIcon({ className }: { className?: string }) {
