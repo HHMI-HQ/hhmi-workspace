@@ -1,5 +1,11 @@
 # @hhmi/compliance
 
+## 0.1.12
+
+### Patch Changes
+
+- 458d590: Switch to lucide grid aligned open access icon
+
 ## 0.1.11
 
 ### Patch Changes
